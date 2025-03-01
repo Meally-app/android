@@ -1,5 +1,5 @@
 package com.meally.meally.common.di
 
-import org.koin.dsl.module
+import com.meally.meally.common.navigation.navigationModule
 
-val commonModule = module {}
+val commonModule = navigationModule
