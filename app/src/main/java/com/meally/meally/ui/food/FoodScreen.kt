@@ -4,14 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -19,15 +19,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.meally.domain.barcode.Barcode
 import com.meally.meally.common.barcodeAnalyzer.BarcodeAnalyzer
 import com.meally.meally.common.barcodeAnalyzer.BarcodeScanView
+import com.meally.meally.common.components.BasicText
 import com.meally.meally.common.components.VerticalSpacer
 import com.meally.meally.common.navigation.Navigator
-import com.meally.meally.ui.food.destinations.OtherScreenDestination
 import com.meally.meally.ui.theme.Typography
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
-@Destination(start = true)
+@Destination
 @Composable
 fun FoodScreen(
     navigator: Navigator = koinInject(),
@@ -51,7 +51,6 @@ fun FoodScreen(
                 modifier = Modifier,
             )
         },
-        onButtonClicked = { navigator.navigate(OtherScreenDestination(2)) },
     )
 }
 
@@ -59,11 +58,13 @@ fun FoodScreen(
 fun FoodScreenStateless(
     state: FoodViewState,
     barcodeScannerView: @Composable () -> Unit = {},
-    onButtonClicked: () -> Unit = {},
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize().background(Color.White),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(horizontal = 24.dp)
     ) {
         if (state.isLoadingInitialData) {
             CircularProgressIndicator()
@@ -74,24 +75,20 @@ fun FoodScreenStateless(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 VerticalSpacer(24.dp)
-                Text(
+                BasicText(
                     text = "Fetching food from repository",
-                    style = Typography.headlineMedium,
+                    style = Typography.h2.copy(textAlign = TextAlign.Center),
                 )
                 VerticalSpacer(24.dp)
-                Text(text = "Food is ${state.food}")
+                BasicText(
+                    text = "Food is ${state.food}",
+                    style = Typography.body1,
+                )
                 VerticalSpacer(24.dp)
-                Text(text = state.barcode)
-                VerticalSpacer(24.dp)
-                Button(
-                    onClick = onButtonClicked,
-                ) {
-                    Text(
-                        text = "Other screen",
-                        style = Typography.labelLarge,
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                BasicText(
+                    text = state.barcode,
+                    style = Typography.numbers1,
+                )
             }
         }
     }

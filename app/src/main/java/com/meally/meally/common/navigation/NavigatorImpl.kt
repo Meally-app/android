@@ -1,28 +1,38 @@
 package com.meally.meally.common.navigation
 
 import androidx.navigation.NavOptionsBuilder
-import com.meally.meally.ui.food.destinations.FoodScreenDestination
+import com.meally.meally.ui.destinations.HomeTabScreenDestination
 import com.ramcosta.composedestinations.spec.Direction
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class NavigatorImpl(
-    private val destinationsNavigator: NavHostControllerProvider,
-) : Navigator {
+    private val navHostController: NavHostControllerProvider,
+) : Navigator,
+    CoroutineScope by MainScope() {
     override fun navigate(
         direction: Direction,
         builder: NavOptionsBuilder.() -> Unit,
     ) {
-        destinationsNavigator.navigate(
-            direction = direction,
-            builder = builder,
-        )
+        launch {
+            navHostController.navigate(
+                direction = direction,
+                builder = builder,
+            )
+        }
     }
 
     override fun goBack() {
-        destinationsNavigator.popBackStack()
+        launch {
+            navHostController.popBackStack()
+        }
     }
 
     override fun goToHome() {
-        while (destinationsNavigator.popBackStack());
-        navigate(FoodScreenDestination)
+        launch {
+            while (navHostController.popBackStack());
+            navigate(HomeTabScreenDestination)
+        }
     }
 }
