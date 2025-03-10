@@ -1,7 +1,7 @@
 package com.meally.meally.common.navigation
 
 import androidx.navigation.NavOptionsBuilder
-import com.meally.meally.ui.destinations.HomeTabScreenDestination
+import com.meally.meally.screens.destinations.HomeTabScreenDestination
 import com.ramcosta.composedestinations.spec.Direction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope

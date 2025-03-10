@@ -29,6 +29,6 @@ fun BasicText(
         softWrap = softWrap,
         maxLines = maxLines,
         minLines = minLines,
-        color = if (style.color == Color.Unspecified) MaterialTheme.colorScheme.onBackground else style.color
+        color = if (style.color == Color.Unspecified) MaterialTheme.colorScheme.onBackground else style.color,
     )
 }

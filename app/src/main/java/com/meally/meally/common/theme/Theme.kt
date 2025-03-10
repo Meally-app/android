@@ -1,4 +1,4 @@
-package com.meally.meally.ui.theme
+package com.meally.meally.common.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

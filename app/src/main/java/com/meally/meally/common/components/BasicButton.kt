@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.meally.meally.ui.theme.MeallyTheme
-import com.meally.meally.ui.theme.Typography
+import com.meally.meally.common.theme.MeallyTheme
+import com.meally.meally.common.theme.Typography
 
 @Composable
 fun BasicButton(

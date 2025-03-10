@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp") version "2.0.0-1.0.22"
     kotlin("plugin.serialization") version "2.0.20"
+    id("com.google.gms.google-services")
 }
 
 kotlin {
@@ -88,7 +89,8 @@ dependencies {
     implementation(libs.koin.compose.viewmodel)
     implementation(libs.mlkit.barcode.scanning)
     implementation(libs.kotlinx.serialization.json)
-
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
     // ### destinations ###
     implementation(libs.destinations.animations.core)
     ksp(libs.destinations)
@@ -98,6 +100,10 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
+
+    // ### firebase ###
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
 
     // ### testing ###
     testImplementation(libs.junit)

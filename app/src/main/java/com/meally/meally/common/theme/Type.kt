@@ -1,4 +1,4 @@
-package com.meally.meally.ui.theme
+package com.meally.meally.common.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

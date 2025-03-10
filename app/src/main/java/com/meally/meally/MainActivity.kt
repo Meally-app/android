@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.meally.meally.common.navigation.NavHostControllerProvider
-import com.meally.meally.ui.NavGraphs
-import com.meally.meally.ui.theme.MeallyTheme
+import com.meally.meally.common.theme.MeallyTheme
+import com.meally.meally.screens.NavGraphs
 import com.ramcosta.composedestinations.DestinationsNavHost
 import org.koin.compose.koinInject
 

@@ -1,4 +1,4 @@
-package com.meally.meally.ui.food
+package com.meally.meally.screens.food
 
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
