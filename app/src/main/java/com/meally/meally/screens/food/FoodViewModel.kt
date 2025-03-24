@@ -54,6 +54,7 @@ class FoodViewModel(
         viewModelScope.launch(Dispatchers.Default) {
             val result = runCatching { api.getProductDetails(barcode).toFood() }
             withContext(Dispatchers.Main) {
+                println(result.getOrNull())
                 navigator.navigate(FoodInfoScreenDestination(result.getOrNull()))
             }
         }

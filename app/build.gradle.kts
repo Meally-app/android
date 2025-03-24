@@ -91,6 +91,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+
+    // ### coil ###
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
     // ### destinations ###
     implementation(libs.destinations.animations.core)
     ksp(libs.destinations)

@@ -1,5 +1,6 @@
 package com.meally.meally.common.navigation
 
+import android.util.Log
 import androidx.navigation.NavOptionsBuilder
 import com.meally.meally.screens.destinations.HomeTabScreenDestination
 import com.ramcosta.composedestinations.spec.Direction
