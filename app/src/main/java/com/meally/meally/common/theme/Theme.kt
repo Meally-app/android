@@ -6,6 +6,8 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
+import com.meally.meally.common.components.SetStatusBarColor
 
 private val DarkColorScheme =
     darkColorScheme(
@@ -37,6 +39,10 @@ fun MeallyTheme(
             darkTheme -> DarkColorScheme
             else -> LightColorScheme
         }
+
+    if (!LocalInspectionMode.current) {
+        SetStatusBarColor(colorScheme.background, useDarkIcons = !darkTheme)
+    }
 
     MaterialTheme(colorScheme = colorScheme, typography = Typography.materialTypography, content = content)
 }

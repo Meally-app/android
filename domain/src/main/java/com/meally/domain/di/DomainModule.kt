@@ -1,5 +1,6 @@
 package com.meally.domain.di
 
-import org.koin.dsl.module
+import com.meally.domain.startup.di.domainStartupModule
+import com.meally.domain.user.di.domainUserModule
 
-val domainModule = module {}
+val domainModule = domainStartupModule + domainUserModule

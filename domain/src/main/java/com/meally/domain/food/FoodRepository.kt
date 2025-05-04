@@ -1,7 +1,8 @@
 package com.meally.domain.food
 
-import kotlinx.coroutines.flow.Flow
+import com.meally.domain.barcode.Barcode
+import com.meally.domain.common.util.Resource
 
 interface FoodRepository {
-    val foodFlow: Flow<Food>
+    suspend fun getFood(barcode: Barcode): Resource<Food>
 }

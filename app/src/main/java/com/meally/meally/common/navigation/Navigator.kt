@@ -9,6 +9,8 @@ interface Navigator {
         builder: NavOptionsBuilder.() -> Unit = {},
     )
 
+    fun clearStack()
+
     fun goBack()
 
     fun goToHome()

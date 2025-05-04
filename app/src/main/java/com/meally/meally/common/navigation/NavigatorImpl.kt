@@ -1,6 +1,5 @@
 package com.meally.meally.common.navigation
 
-import android.util.Log
 import androidx.navigation.NavOptionsBuilder
 import com.meally.meally.screens.destinations.HomeTabScreenDestination
 import com.ramcosta.composedestinations.spec.Direction
@@ -24,6 +23,12 @@ class NavigatorImpl(
         }
     }
 
+    override fun clearStack() {
+        launch {
+            while (navHostController.popBackStack());
+        }
+    }
+
     override fun goBack() {
         launch {
             navHostController.popBackStack()
@@ -32,7 +37,7 @@ class NavigatorImpl(
 
     override fun goToHome() {
         launch {
-            while (navHostController.popBackStack());
+            clearStack()
             navigate(HomeTabScreenDestination)
         }
     }

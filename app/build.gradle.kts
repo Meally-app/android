@@ -91,6 +91,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.logging.interceptor)
 
     // ### coil ###
     implementation(libs.coil.compose)

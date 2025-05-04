@@ -2,70 +2,65 @@ package com.meally.meally.screens.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.meally.domain.auth.User
-import com.meally.meally.common.navigation.Navigator
-import com.meally.meally.screens.destinations.HomeTabScreenDestination
+import com.meally.domain.auth.repository.AuthRepository
+import com.meally.domain.common.util.onSuccess
+import com.meally.domain.user.repository.UserRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class SignupViewModel(
-    private val auth: FirebaseAuth,
-    private val navigator: Navigator,
+    private val userRepository: UserRepository,
+    private val authRepository: AuthRepository,
 ) : ViewModel() {
-    private val _userFlow: MutableStateFlow<User> = MutableStateFlow(User("", "", ""))
-    val userFlow = _userFlow.asStateFlow()
+    val userFlow =
+        userRepository.me
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = null,
+            )
+
+    fun test() {
+        viewModelScope.launch(Dispatchers.Default) {
+            userRepository.test()
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch(Dispatchers.Default) {
+            authRepository.logout()
+        }
+    }
 
     fun signupNewUser(
         email: String,
         password: String,
     ) {
-        auth
-            .createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    auth.currentUser?.let {
-                        navigator.navigate(HomeTabScreenDestination)
-                        viewModelScope.launch(Dispatchers.Default) {
-                            _userFlow.emit(
-                                User(
-                                    id = it.uid,
-                                    email = it.email ?: "",
-                                    username = it.displayName ?: "",
-                                ),
-                            )
-                        }
-                    }
+        viewModelScope.launch(Dispatchers.Default) {
+            authRepository
+                .signupEmailPassword(
+                    email = email,
+                    password = password,
+                ).onSuccess {
+                    userRepository.me()
                 }
-            }
+        }
     }
 
     fun loginUser(
         email: String,
         password: String,
     ) {
-        auth
-            .signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    auth.currentUser?.let {
-                        viewModelScope.launch(Dispatchers.Default) {
-                            it.getIdToken(false).addOnSuccessListener {
-                                println("[TEST] token: ${it.token}")
-                            }
-
-                            _userFlow.emit(
-                                User(
-                                    id = it.uid,
-                                    email = it.email ?: "",
-                                    username = it.displayName ?: "",
-                                ),
-                            )
-                        }
-                    }
+        viewModelScope.launch(Dispatchers.Default) {
+            authRepository
+                .loginEmailPassword(
+                    email = email,
+                    password = password,
+                ).onSuccess {
+                    userRepository.me()
                 }
-            }
+        }
     }
 }
