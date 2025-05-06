@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,10 +57,10 @@ private fun SignupScreenStateless(
     onBackendCall: () -> Unit = {},
 ) {
     var email by remember {
-        mutableStateOf("greenbananalp@gmail.com")
+        mutableStateOf("")
     }
     var password by remember {
-        mutableStateOf("admin123")
+        mutableStateOf("")
     }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -79,6 +80,7 @@ private fun SignupScreenStateless(
         BasicTextField(
             text = password,
             onTextChanged = { password = it },
+            visualTransformation = PasswordVisualTransformation()
         )
         VerticalSpacer(24.dp)
         FlowRow(
@@ -96,10 +98,10 @@ private fun SignupScreenStateless(
                 text = "Logout",
                 onClick = onLogoutClicked,
             )
-            BasicButton(
-                text = "Backend call",
-                onClick = onBackendCall,
-            )
+//            BasicButton(
+//                text = "Backend call",
+//                onClick = onBackendCall,
+//            )
         }
         VerticalSpacer(12.dp)
         BasicText(

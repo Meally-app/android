@@ -30,7 +30,7 @@ object Typography {
             fontFamily = PoppinsFamily,
             fontWeight = FontWeight.SemiBold,
             fontSize = 20.sp,
-            lineHeight = 24.sp,
+            lineHeight = 20.sp,
         )
 
     val body1 =

@@ -19,6 +19,7 @@ data class FoodItemViewState(
     val carbs: String,
     val protein: String,
     val fat: String,
+    val unitOfMeasurement: String,
 )
 
 fun Food.toViewState() =
@@ -29,4 +30,5 @@ fun Food.toViewState() =
         carbs = carbs.toString(),
         protein = protein.toString(),
         fat = fat.toString(),
+        unitOfMeasurement = unitOfMeasurement.abbreviation,
     )

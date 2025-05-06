@@ -33,6 +33,7 @@ fun foodEntryMapper(
                         carbs = format(carbs, amount),
                         protein = format(protein, amount),
                         fat = format(fat, amount),
+                        unitOfMeasurement = unitOfMeasurement.abbreviation,
                     )
                 },
             )

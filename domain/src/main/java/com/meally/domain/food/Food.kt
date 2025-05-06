@@ -11,7 +11,19 @@ data class Food(
     val sugars: Double?,
     val protein: Double,
     val imageUrl: String,
+    val unitOfMeasurement: UnitOfMeasurement,
 ) {
+    enum class UnitOfMeasurement(val abbreviation: String,) {
+        GRAMS("g"), MILLILITERS("ml"), PIECES("pc");
+
+        companion object {
+            fun safeValueOf(value: String) = when (value) {
+                "MILLILITERS" -> MILLILITERS
+                else -> GRAMS
+            }
+        }
+    }
+
     companion object {
         val Empty =
             Food(
@@ -25,6 +37,7 @@ data class Food(
                 sugars = null,
                 protein = 0.0,
                 imageUrl = "",
+                unitOfMeasurement = UnitOfMeasurement.GRAMS,
             )
     }
 }

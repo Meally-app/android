@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.meally.meally.common.theme.MeallyTheme
@@ -31,6 +32,7 @@ fun BasicTextField(
         ),
     shape: Shape = RoundedCornerShape(100.dp),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     label: @Composable (() -> Unit)? = null,
 ) {
     OutlinedTextField(
@@ -41,6 +43,7 @@ fun BasicTextField(
         shape = shape,
         textStyle = textStyle,
         keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation,
         label = label,
     )
 }

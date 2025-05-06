@@ -5,8 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.meally.domain.barcode.Barcode
 import com.meally.domain.common.util.Resource
+import com.meally.domain.common.util.onFailure
+import com.meally.domain.common.util.onSuccess
+import com.meally.domain.diary.DiaryRepository
 import com.meally.domain.food.Food
 import com.meally.domain.food.FoodRepository
+import com.meally.domain.mealType.MealType
 import com.meally.meally.common.navigation.Navigator
 import com.meally.meally.screens.foodEntry.mapper.foodEntryMapper
 import com.meally.meally.screens.foodEntry.ui.FoodEntryScreenNavArgs
@@ -19,9 +23,11 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class FoodEntryViewModel(
     private val foodRepository: FoodRepository,
+    private val diaryRepository: DiaryRepository,
     private val navigator: Navigator,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -49,13 +55,27 @@ class FoodEntryViewModel(
     }
 
     fun confirm() {
-        println("[TEST] confirming amount ${amount.value}")
         isLoading.update { true }
-        navigator.goToHome()
+        val foodVal = when (val value = food.value) {
+            is Resource.Failure -> Food.Empty
+            is Resource.Success -> value.data
+        }
+        viewModelScope.launch {
+            diaryRepository.enterFood(
+                date = LocalDate.now(),
+                food = foodVal,
+                mealType = MealType("breakfast", 1),
+                amount = amount.value.toDouble()
+            ).onSuccess {
+                navigator.goToHome()
+            }.onFailure {
+                println("[TEST] fail $it")
+            }
+        }
     }
 
     fun goBack() {
-        navigator.goBack()
+        navigator.goToHome()
     }
 
     private fun loadFoodData(barcode: String) {

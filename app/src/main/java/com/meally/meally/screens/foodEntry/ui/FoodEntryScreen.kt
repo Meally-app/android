@@ -1,5 +1,6 @@
 package com.meally.meally.screens.foodEntry.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,6 +67,10 @@ fun FoodEntryScreen(viewModel: FoodEntryViewModel = koinViewModel()) {
         onAmountChanged = viewModel::amountChanged,
         onConfirmClicked = viewModel::confirm,
     )
+
+    BackHandler {
+        viewModel.goBack()
+    }
 }
 
 @Composable
@@ -173,7 +178,7 @@ private fun Content(
         HorizontalDivider()
 
         InputRow(
-            label = "Amount (grams):",
+            label = "Amount (${item.unitOfMeasurement}):",
             initialValue = "100",
             onInputChanged = onAmountChanged,
             keyboardOptions =
@@ -339,6 +344,7 @@ private fun LoadedPreview() {
                             carbs = "12.1",
                             protein = "8.4",
                             fat = "22.0",
+                            unitOfMeasurement = "g",
                         ),
                 ),
         )

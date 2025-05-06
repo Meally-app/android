@@ -15,6 +15,7 @@ data class FoodDto(
     val sugars: Double?,
     val protein: Double,
     val image: ImageResourceDto,
+    val unitOfMeasurement: String,
 )
 
 @Serializable
@@ -34,4 +35,5 @@ fun FoodDto.toDomain() =
         sugars = sugars,
         protein = protein,
         imageUrl = image.resourceUrl,
+        unitOfMeasurement = Food.UnitOfMeasurement.safeValueOf(unitOfMeasurement),
     )
