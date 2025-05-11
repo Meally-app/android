@@ -8,8 +8,8 @@ import com.meally.domain.common.util.Resource
 import com.meally.domain.food.FoodRepository
 import com.meally.meally.common.navigation.Navigator
 import com.meally.meally.screens.foodInfo.ui.FoodInfoScreenNavArgs
-import com.meally.meally.screens.foodInfo.ui.model.FoodInfoViewState
-import com.meally.meally.screens.foodInfo.ui.model.toViewState
+import com.meally.meally.common.food.viewState.FoodInfoViewState
+import com.meally.meally.common.food.viewState.toViewState
 import com.meally.meally.screens.navArgs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

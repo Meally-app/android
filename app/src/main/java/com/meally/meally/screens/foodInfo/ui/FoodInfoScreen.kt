@@ -21,7 +21,7 @@ import coil3.compose.AsyncImage
 import com.meally.meally.common.components.BasicText
 import com.meally.meally.common.components.VerticalSpacer
 import com.meally.meally.common.theme.Typography
-import com.meally.meally.screens.foodInfo.ui.model.FoodInfoViewState
+import com.meally.meally.common.food.viewState.FoodInfoViewState
 import com.meally.meally.screens.foodInfo.viewModel.FoodInfoViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel

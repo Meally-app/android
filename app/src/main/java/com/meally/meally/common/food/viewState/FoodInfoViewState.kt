@@ -1,4 +1,4 @@
-package com.meally.meally.screens.foodInfo.ui.model
+package com.meally.meally.common.food.viewState
 
 import com.meally.domain.food.Food
 

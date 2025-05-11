@@ -37,18 +37,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.meally.domain.mealType.MealType
 import com.meally.meally.R
 import com.meally.meally.common.components.AppBar
 import com.meally.meally.common.components.BasicButton
 import com.meally.meally.common.components.BasicText
 import com.meally.meally.common.components.BasicTextField
+import com.meally.meally.common.components.DropdownPicker
 import com.meally.meally.common.components.HorizontalSpacer
+import com.meally.meally.common.components.VerticalSpacer
 import com.meally.meally.common.components.focusClearer
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.common.theme.Typography
 import com.meally.meally.screens.foodEntry.viewModel.FoodEntryViewModel
-import com.meally.meally.screens.foodInfo.ui.model.FoodInfoViewState
-import com.meally.meally.screens.foodInfo.ui.model.FoodItemViewState
+import com.meally.meally.common.food.viewState.FoodInfoViewState
+import com.meally.meally.common.food.viewState.FoodItemViewState
+import com.meally.meally.screens.foodInfo.ui.model.FoodEntryViewState
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 
@@ -65,6 +69,7 @@ fun FoodEntryScreen(viewModel: FoodEntryViewModel = koinViewModel()) {
         state = state,
         onBackClicked = viewModel::goBack,
         onAmountChanged = viewModel::amountChanged,
+        onMealTypeSelected = viewModel::mealTypeSelected,
         onConfirmClicked = viewModel::confirm,
     )
 
@@ -75,9 +80,10 @@ fun FoodEntryScreen(viewModel: FoodEntryViewModel = koinViewModel()) {
 
 @Composable
 fun FoodEntryScreenStateless(
-    state: FoodInfoViewState,
+    state: FoodEntryViewState,
     onBackClicked: () -> Unit = {},
     onAmountChanged: (String) -> Unit = {},
+    onMealTypeSelected: (MealType) -> Unit = {},
     onConfirmClicked: () -> Unit = {},
 ) {
     Column(
@@ -93,7 +99,7 @@ fun FoodEntryScreenStateless(
             onLeadingIconClicked = onBackClicked,
         )
 
-        when (state) {
+        when (state.foodInfoViewState) {
             FoodInfoViewState.Error -> {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -124,8 +130,10 @@ fun FoodEntryScreenStateless(
             }
             is FoodInfoViewState.Loaded -> {
                 Content(
-                    item = state.foodItem,
+                    item = state.foodInfoViewState.foodItem,
+                    mealTypeOptions = state.mealTypeOptions,
                     onAmountChanged = onAmountChanged,
+                    onMealTypeSelected = onMealTypeSelected,
                     onConfirmClicked = onConfirmClicked,
                 )
             }
@@ -136,7 +144,9 @@ fun FoodEntryScreenStateless(
 @Composable
 private fun Content(
     item: FoodItemViewState,
+    mealTypeOptions: Map<String, MealType>,
     onAmountChanged: (String) -> Unit,
+    onMealTypeSelected: (MealType) -> Unit,
     onConfirmClicked: () -> Unit,
 ) {
     Column(
@@ -177,6 +187,8 @@ private fun Content(
 
         HorizontalDivider()
 
+        VerticalSpacer(32.dp)
+
         InputRow(
             label = "Amount (${item.unitOfMeasurement}):",
             initialValue = "100",
@@ -186,13 +198,20 @@ private fun Content(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.NumberPassword,
                 ),
-            modifier = Modifier.padding(vertical = 32.dp),
+        )
+
+        VerticalSpacer(8.dp)
+
+        DropdownRow(
+            label = "Meal",
+            options = mealTypeOptions,
+            onOptionClicked = onMealTypeSelected,
         )
 
         HorizontalDivider(
             modifier =
                 Modifier.padding(
-                    bottom = 32.dp,
+                    vertical = 32.dp,
                 ),
         )
 
@@ -225,7 +244,39 @@ private fun Content(
         BasicButton(
             text = "Confirm",
             onClick = onConfirmClicked,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+        )
+    }
+}
+
+@Composable
+private fun DropdownRow(
+    label: String,
+    options: Map<String, MealType>,
+    onOptionClicked: (MealType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .height(56.dp)
+            .fillMaxWidth()
+    ) {
+        BasicText(
+            text = label,
+            style = Typography.body1.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
+        )
+
+        HorizontalSpacer(24.dp)
+
+        DropdownPicker(
+            optionMap = options,
+            onOptionClicked = onOptionClicked,
         )
     }
 }
@@ -324,7 +375,10 @@ private fun InputRow(
 private fun LoadingPreview() {
     MeallyTheme {
         FoodEntryScreenStateless(
-            state = FoodInfoViewState.Loading,
+            state = FoodEntryViewState(
+                foodInfoViewState = FoodInfoViewState.Loading,
+                mealTypeOptions = mapOf(),
+            )
         )
     }
 }
@@ -334,19 +388,22 @@ private fun LoadingPreview() {
 private fun LoadedPreview() {
     MeallyTheme {
         FoodEntryScreenStateless(
-            state =
-                FoodInfoViewState.Loaded(
+            state = FoodEntryViewState(
+                foodInfoViewState = FoodInfoViewState.Loaded(
                     foodItem =
-                        FoodItemViewState(
-                            name = "Food",
-                            imageUrl = "",
-                            calories = "123.11",
-                            carbs = "12.1",
-                            protein = "8.4",
-                            fat = "22.0",
-                            unitOfMeasurement = "g",
-                        ),
+                    FoodItemViewState(
+                        name = "Food",
+                        imageUrl = "",
+                        calories = "123.11",
+                        carbs = "12.1",
+                        protein = "8.4",
+                        fat = "22.0",
+                        unitOfMeasurement = "g",
+                    ),
                 ),
+                mealTypeOptions = mapOf("Breakfast" to MealType("breakfast", 1))
+            )
+
         )
     }
 }

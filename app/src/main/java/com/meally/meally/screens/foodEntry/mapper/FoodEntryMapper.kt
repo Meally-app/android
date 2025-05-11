@@ -2,8 +2,10 @@ package com.meally.meally.screens.foodEntry.mapper
 
 import com.meally.domain.common.util.Resource
 import com.meally.domain.food.Food
-import com.meally.meally.screens.foodInfo.ui.model.FoodInfoViewState
-import com.meally.meally.screens.foodInfo.ui.model.FoodItemViewState
+import com.meally.domain.mealType.MealType
+import com.meally.meally.common.food.viewState.FoodInfoViewState
+import com.meally.meally.common.food.viewState.FoodItemViewState
+import com.meally.meally.screens.foodInfo.ui.model.FoodEntryViewState
 import java.text.NumberFormat
 
 private val formatter =
@@ -16,6 +18,18 @@ fun foodEntryMapper(
     food: Resource<Food>,
     amount: Int,
     isLoading: Boolean,
+    mealTypes: List<MealType>,
+): FoodEntryViewState = FoodEntryViewState(
+    foodInfoViewState = mapFoodInfo(food, isLoading, amount),
+    mealTypeOptions = mapMealTypes(mealTypes),
+)
+
+private fun mapMealTypes(mealTypes: List<MealType>) = mealTypes.associateBy { it.name.replaceFirstChar { it.uppercase() } }
+
+private fun mapFoodInfo(
+    food: Resource<Food>,
+    isLoading: Boolean,
+    amount: Int,
 ): FoodInfoViewState {
     if (isLoading) {
         return FoodInfoViewState.Loading
