@@ -43,18 +43,24 @@ import com.meally.meally.common.components.AppBar
 import com.meally.meally.common.components.BasicButton
 import com.meally.meally.common.components.BasicText
 import com.meally.meally.common.components.BasicTextField
+import com.meally.meally.common.components.datePicker.DatePickerModal
 import com.meally.meally.common.components.DropdownPicker
 import com.meally.meally.common.components.HorizontalSpacer
 import com.meally.meally.common.components.VerticalSpacer
+import com.meally.meally.common.components.datePicker.DatePickerInput
 import com.meally.meally.common.components.focusClearer
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.common.theme.Typography
 import com.meally.meally.screens.foodEntry.viewModel.FoodEntryViewModel
 import com.meally.meally.common.food.viewState.FoodInfoViewState
 import com.meally.meally.common.food.viewState.FoodItemViewState
+import com.meally.meally.common.time.util.toEpochMillis
 import com.meally.meally.screens.foodInfo.ui.model.FoodEntryViewState
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 
 data class FoodEntryScreenNavArgs(
     val barcode: String,
@@ -70,6 +76,7 @@ fun FoodEntryScreen(viewModel: FoodEntryViewModel = koinViewModel()) {
         onBackClicked = viewModel::goBack,
         onAmountChanged = viewModel::amountChanged,
         onMealTypeSelected = viewModel::mealTypeSelected,
+        onDateSelected = viewModel::dateSelected,
         onConfirmClicked = viewModel::confirm,
     )
 
@@ -84,6 +91,7 @@ fun FoodEntryScreenStateless(
     onBackClicked: () -> Unit = {},
     onAmountChanged: (String) -> Unit = {},
     onMealTypeSelected: (MealType) -> Unit = {},
+    onDateSelected: (LocalDate) -> Unit = {},
     onConfirmClicked: () -> Unit = {},
 ) {
     Column(
@@ -132,8 +140,10 @@ fun FoodEntryScreenStateless(
                 Content(
                     item = state.foodInfoViewState.foodItem,
                     mealTypeOptions = state.mealTypeOptions,
+                    selectedDate = state.selectedDate,
                     onAmountChanged = onAmountChanged,
                     onMealTypeSelected = onMealTypeSelected,
+                    onDateSelected = onDateSelected,
                     onConfirmClicked = onConfirmClicked,
                 )
             }
@@ -145,108 +155,165 @@ fun FoodEntryScreenStateless(
 private fun Content(
     item: FoodItemViewState,
     mealTypeOptions: Map<String, MealType>,
+    selectedDate: LocalDate,
+    onDateSelected: (LocalDate) -> Unit,
     onAmountChanged: (String) -> Unit,
     onMealTypeSelected: (MealType) -> Unit,
     onConfirmClicked: () -> Unit,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier =
+    var isDatePickerShown by remember { mutableStateOf(false) }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier =
             Modifier
                 .fillMaxSize()
                 .padding(24.dp)
                 .verticalScroll(rememberScrollState()),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier =
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier =
                 Modifier
                     .height(80.dp)
                     .fillMaxWidth(),
-        ) {
-            BasicText(
-                text = item.name,
-                style =
+            ) {
+                BasicText(
+                    text = item.name,
+                    style =
                     Typography.h2.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                     ),
-            )
+                )
 
-            HorizontalSpacer(24.dp)
+                HorizontalSpacer(24.dp)
 
-            AsyncImage(
-                model = item.imageUrl,
-                contentDescription = null,
-                modifier =
+                AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = null,
+                    modifier =
                     Modifier
                         .fillMaxHeight()
                         .aspectRatio(1f),
-            )
-        }
+                )
+            }
 
-        HorizontalDivider()
+            HorizontalDivider()
 
-        VerticalSpacer(32.dp)
+            VerticalSpacer(32.dp)
 
-        InputRow(
-            label = "Amount (${item.unitOfMeasurement}):",
-            initialValue = "100",
-            onInputChanged = onAmountChanged,
-            keyboardOptions =
+            InputRow(
+                label = "Amount (${item.unitOfMeasurement}):",
+                initialValue = "100",
+                onInputChanged = onAmountChanged,
+                keyboardOptions =
                 KeyboardOptions(
                     imeAction = ImeAction.Done,
                     keyboardType = KeyboardType.NumberPassword,
                 ),
-        )
+            )
 
-        VerticalSpacer(8.dp)
+            VerticalSpacer(8.dp)
 
-        DropdownRow(
-            label = "Meal",
-            options = mealTypeOptions,
-            onOptionClicked = onMealTypeSelected,
-        )
+            DropdownRow(
+                label = "Meal",
+                options = mealTypeOptions,
+                onOptionClicked = onMealTypeSelected,
+            )
 
-        HorizontalDivider(
-            modifier =
+            VerticalSpacer(8.dp)
+
+            DatePickerRow(
+                label = "Date",
+                onOpenDateSelection = { isDatePickerShown = true },
+                selectedDate = selectedDate,
+            )
+
+            HorizontalDivider(
+                modifier =
                 Modifier.padding(
                     vertical = 32.dp,
                 ),
-        )
+            )
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier =
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier =
                 Modifier
                     .fillMaxWidth(),
-        ) {
-            InfoRow(
-                label = "Calories",
-                value = item.calories,
-            )
-            InfoRow(
-                label = "Carbohydrates",
-                value = item.carbs,
-            )
-            InfoRow(
-                label = "Protein",
-                value = item.protein,
-            )
-            InfoRow(
-                label = "Fat",
-                value = item.fat,
+            ) {
+                InfoRow(
+                    label = "Calories",
+                    value = item.calories,
+                )
+                InfoRow(
+                    label = "Carbohydrates",
+                    value = item.carbs,
+                )
+                InfoRow(
+                    label = "Protein",
+                    value = item.protein,
+                )
+                InfoRow(
+                    label = "Fat",
+                    value = item.fat,
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
+            BasicButton(
+                text = "Confirm",
+                onClick = onConfirmClicked,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
             )
         }
 
-        Spacer(Modifier.weight(1f))
+        if (isDatePickerShown) {
+            DatePickerModal(
+                selectedDate = selectedDate,
+                onDateSelected = {
+                    onDateSelected(it)
+                },
+                onDismiss = { isDatePickerShown = false },
+            )
+        }
+    }
 
-        BasicButton(
-            text = "Confirm",
-            onClick = onConfirmClicked,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
+}
+
+@Composable
+fun DatePickerRow(
+    label: String,
+    selectedDate: LocalDate,
+    onOpenDateSelection: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .height(56.dp)
+            .fillMaxWidth()
+    ) {
+        BasicText(
+            text = label,
+            style = Typography.body1.copy(
+                color = MaterialTheme.colorScheme.onBackground,
+            ),
+        )
+
+        HorizontalSpacer(24.dp)
+
+        DatePickerInput(
+            selectedDate = selectedDate,
+            onClick = onOpenDateSelection,
         )
     }
 }
@@ -378,6 +445,7 @@ private fun LoadingPreview() {
             state = FoodEntryViewState(
                 foodInfoViewState = FoodInfoViewState.Loading,
                 mealTypeOptions = mapOf(),
+                selectedDate = LocalDate.now(),
             )
         )
     }
@@ -401,7 +469,8 @@ private fun LoadedPreview() {
                         unitOfMeasurement = "g",
                     ),
                 ),
-                mealTypeOptions = mapOf("Breakfast" to MealType("breakfast", 1))
+                mealTypeOptions = mapOf("Breakfast" to MealType("breakfast", 1)),
+                selectedDate = LocalDate.now(),
             )
 
         )

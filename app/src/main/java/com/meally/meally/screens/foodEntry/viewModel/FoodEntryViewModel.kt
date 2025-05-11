@@ -47,14 +47,16 @@ class FoodEntryViewModel(
 
     private val selectedMealType = MutableStateFlow(MealType.Empty)
 
+    private val selectedDate = MutableStateFlow(LocalDate.now())
+
     val state =
-        combine(food, amount, isLoading, mealTypes) { food, amount, isLoading, mealTypes ->
-            foodEntryMapper(food, amount, isLoading, mealTypes)
+        combine(food, amount, isLoading, mealTypes, selectedDate) { food, amount, isLoading, mealTypes, selectedDate ->
+            foodEntryMapper(food, amount, isLoading, mealTypes, selectedDate)
         }.onStart { loadFoodData(barcode) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = foodEntryMapper(food.value, amount.value, isLoading.value, mealTypes.value),
+                initialValue = foodEntryMapper(food.value, amount.value, isLoading.value, mealTypes.value, selectedDate.value),
             )
 
     fun amountChanged(value: String) {
@@ -70,14 +72,14 @@ class FoodEntryViewModel(
         }
         viewModelScope.launch {
             diaryRepository.enterFood(
-                date = LocalDate.now(),
+                date = selectedDate.value,
                 food = foodVal,
                 mealType = selectedMealType.value,
                 amount = amount.value.toDouble()
             ).onSuccess {
                 navigator.goToHome()
             }.onFailure {
-                println("[TEST] fail $it")
+                println("[TEST] failed loading diary $it")
             }
         }
     }
@@ -88,6 +90,10 @@ class FoodEntryViewModel(
 
     fun mealTypeSelected(mealType: MealType) {
         selectedMealType.update { mealType }
+    }
+
+    fun dateSelected(date: LocalDate) {
+        selectedDate.update { date }
     }
 
     private fun loadFoodData(barcode: String) {

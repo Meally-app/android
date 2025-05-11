@@ -7,6 +7,7 @@ import com.meally.meally.common.food.viewState.FoodInfoViewState
 import com.meally.meally.common.food.viewState.FoodItemViewState
 import com.meally.meally.screens.foodInfo.ui.model.FoodEntryViewState
 import java.text.NumberFormat
+import java.time.LocalDate
 
 private val formatter =
     NumberFormat.getInstance().apply {
@@ -19,9 +20,11 @@ fun foodEntryMapper(
     amount: Int,
     isLoading: Boolean,
     mealTypes: List<MealType>,
+    selectedDate: LocalDate,
 ): FoodEntryViewState = FoodEntryViewState(
     foodInfoViewState = mapFoodInfo(food, isLoading, amount),
     mealTypeOptions = mapMealTypes(mealTypes),
+    selectedDate = selectedDate,
 )
 
 private fun mapMealTypes(mealTypes: List<MealType>) = mealTypes.associateBy { it.name.replaceFirstChar { it.uppercase() } }

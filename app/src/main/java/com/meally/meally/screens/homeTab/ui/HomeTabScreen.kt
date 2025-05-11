@@ -22,6 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,11 +44,15 @@ import com.meally.meally.R
 import com.meally.meally.common.components.AppBar
 import com.meally.meally.common.components.BasicText
 import com.meally.meally.common.components.VerticalSpacer
+import com.meally.meally.common.components.datePicker.DatePickerInput
+import com.meally.meally.common.components.datePicker.DatePickerModal
 import com.meally.meally.common.navigation.Navigator
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.common.theme.Typography
+import com.meally.meally.common.time.util.isToday
 import com.meally.meally.screens.destinations.FoodEntryOptionsScreenDestination
 import com.meally.meally.screens.destinations.SignupScreenDestination
+import com.meally.meally.screens.homeTab.ui.model.HomeTabViewState
 import com.meally.meally.screens.homeTab.viewModel.HomeTabViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
@@ -65,6 +73,7 @@ fun HomeTabScreen(
         onAddClicked = {
             navigator.navigate(FoodEntryOptionsScreenDestination)
         },
+        onDateSelected = viewModel::selectDate,
         onProfileClicked = {
             navigator.navigate(SignupScreenDestination)
         },
@@ -77,10 +86,13 @@ fun HomeTabScreen(
 
 @Composable
 fun HomeTabScreenStateless(
-    state: List<DiaryEntry>,
+    state: HomeTabViewState,
     onAddClicked: () -> Unit = {},
+    onDateSelected: (LocalDate) -> Unit = {},
     onProfileClicked: () -> Unit = {},
 ) {
+
+    var isDatePickerShown by remember { mutableStateOf(false) }
 
     Box(
         Modifier
@@ -93,13 +105,13 @@ fun HomeTabScreenStateless(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-
             AppBar(
                 leadingIconResource = R.drawable.ic_profile,
                 onLeadingIconClicked = onProfileClicked,
             )
             Content(
                 state = state,
+                onOpenDatePicker = { isDatePickerShown = true }
             )
         }
 
@@ -122,12 +134,21 @@ fun HomeTabScreenStateless(
                 modifier = Modifier.fillMaxSize(),
             )
         }
+
+        if (isDatePickerShown) {
+            DatePickerModal(
+                selectedDate = state.selectedDate,
+                onDateSelected = { onDateSelected(it) },
+                onDismiss = { isDatePickerShown = false },
+            )
+        }
     }
 }
 
 @Composable
 fun ColumnScope.Content(
-    state: List<DiaryEntry>,
+    state: HomeTabViewState,
+    onOpenDatePicker: () -> Unit,
 ) {
 
     Column(
@@ -136,7 +157,7 @@ fun ColumnScope.Content(
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
 
-        val consumed = state.sumOf { it.food.calories * it.amount / 100.0 }.toInt()
+        val consumed = state.diaryEntries.sumOf { it.food.calories * it.amount / 100.0 }.toInt()
 
         Box(
             contentAlignment = Alignment.Center,
@@ -185,18 +206,16 @@ fun ColumnScope.Content(
 
         }
 
-        BasicText(
-            text = "Eaten today",
-            style = Typography.h3,
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(top = 32.dp)
+        DatePickerInput(
+            selectedDate = state.selectedDate,
+            onClick = onOpenDatePicker,
+            modifier = Modifier.align(Alignment.Start).padding(top = 16.dp)
         )
 
         HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
         FoodList(
-            state
+            state.diaryEntries
         )
 
         VerticalSpacer(40.dp)
@@ -305,24 +324,28 @@ fun DonutPieChart(
 private fun HomeTabPreview() {
     MeallyTheme {
         HomeTabScreenStateless(
-            state = buildList {
-                repeat(5) {
-                    add(
-                        DiaryEntry(
-                            food = Food.Empty.copy(
-                                name = "Food name",
-                                calories = 140.0,
-                            ),
-                            mealType = MealType(
-                                name = "Breakfast",
-                                orderInDay = 1,
-                            ),
-                            amount = 100.0,
-                            date = LocalDate.now(),
+            state = HomeTabViewState(
+                isLoading = false,
+                diaryEntries = buildList {
+                    repeat(5) {
+                        add(
+                            DiaryEntry(
+                                food = Food.Empty.copy(
+                                    name = "Food name",
+                                    calories = 140.0,
+                                ),
+                                mealType = MealType(
+                                    name = "Breakfast",
+                                    orderInDay = 1,
+                                ),
+                                amount = 100.0,
+                                date = LocalDate.now(),
+                            )
                         )
-                    )
-                }
-            },
+                    }
+                },
+                selectedDate = LocalDate.now().plusDays(2),
+            )
         )
     }
 }

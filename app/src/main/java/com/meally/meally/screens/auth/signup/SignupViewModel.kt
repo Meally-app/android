@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.meally.domain.auth.repository.AuthRepository
 import com.meally.domain.common.util.onSuccess
 import com.meally.domain.user.repository.UserRepository
+import com.meally.meally.common.navigation.Navigator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
@@ -13,6 +14,7 @@ import kotlinx.coroutines.launch
 class SignupViewModel(
     private val userRepository: UserRepository,
     private val authRepository: AuthRepository,
+    private val navigator: Navigator,
 ) : ViewModel() {
     val userFlow =
         userRepository.me
@@ -45,6 +47,7 @@ class SignupViewModel(
                     password = password,
                 ).onSuccess {
                     userRepository.me()
+                    navigator.goToHome()
                 }
         }
     }
@@ -60,6 +63,7 @@ class SignupViewModel(
                     password = password,
                 ).onSuccess {
                     userRepository.me()
+                    navigator.goToHome()
                 }
         }
     }
