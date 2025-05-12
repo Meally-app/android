@@ -8,11 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import com.meally.meally.R
 import com.meally.meally.common.components.BasicText
@@ -35,7 +32,10 @@ fun DatePickerInput(
     selectedDate: LocalDate,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    formatPattern: String = "EEE, dd/MM/yyyy"
+    formatPattern: String = "EEE, dd/MM/yyyy",
+    textStyle: TextStyle = Typography.body1.copy(
+        color = MaterialTheme.colorScheme.onBackground,
+    ),
 ) {
 
     val dateFormatter by remember(formatPattern) { mutableStateOf(DateTimeFormatter.ofPattern(formatPattern)) }
@@ -67,9 +67,7 @@ fun DatePickerInput(
 
             BasicText(
                 text = if (selectedDate.isToday()) "Today" else dateFormatter.format(selectedDate),
-                style = Typography.body1.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
+                style = textStyle,
             )
         }
 

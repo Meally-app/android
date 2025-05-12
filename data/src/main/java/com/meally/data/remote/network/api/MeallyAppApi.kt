@@ -6,6 +6,7 @@ import com.meally.data.food.dto.FoodDto
 import com.meally.data.mealType.dto.MealTypeDto
 import com.meally.data.user.dto.UserDto
 import com.meally.data.util.ApiResponse
+import com.meally.data.weight.dto.WeightDto
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -56,4 +57,14 @@ interface MeallyAppApi {
 
     @GET("/public/meal-type")
     suspend fun getMealTypes(): List<MealTypeDto>
+
+    /*
+     *   /weight
+     */
+
+    @POST("/weight")
+    suspend fun insertWeight(@Body weightDto: WeightDto): WeightDto
+
+    @GET("/weight")
+    suspend fun getWeight(@Query("from") from: LocalDate, @Query("to") to: LocalDate): List<WeightDto>
 }

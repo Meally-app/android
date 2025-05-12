@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -42,25 +41,22 @@ import com.meally.meally.R
 import com.meally.meally.common.components.AppBar
 import com.meally.meally.common.components.BasicButton
 import com.meally.meally.common.components.BasicText
-import com.meally.meally.common.components.BasicTextField
 import com.meally.meally.common.components.datePicker.DatePickerModal
 import com.meally.meally.common.components.DropdownPicker
 import com.meally.meally.common.components.HorizontalSpacer
+import com.meally.meally.common.components.InputRow
 import com.meally.meally.common.components.VerticalSpacer
-import com.meally.meally.common.components.datePicker.DatePickerInput
+import com.meally.meally.common.components.datePicker.DatePickerRow
 import com.meally.meally.common.components.focusClearer
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.common.theme.Typography
 import com.meally.meally.screens.foodEntry.viewModel.FoodEntryViewModel
 import com.meally.meally.common.food.viewState.FoodInfoViewState
 import com.meally.meally.common.food.viewState.FoodItemViewState
-import com.meally.meally.common.time.util.toEpochMillis
-import com.meally.meally.screens.foodInfo.ui.model.FoodEntryViewState
+import com.meally.meally.screens.foodEntry.ui.model.FoodEntryViewState
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
-import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneId
 
 data class FoodEntryScreenNavArgs(
     val barcode: String,
@@ -86,7 +82,7 @@ fun FoodEntryScreen(viewModel: FoodEntryViewModel = koinViewModel()) {
 }
 
 @Composable
-fun FoodEntryScreenStateless(
+private fun FoodEntryScreenStateless(
     state: FoodEntryViewState,
     onBackClicked: () -> Unit = {},
     onAmountChanged: (String) -> Unit = {},
@@ -285,37 +281,6 @@ private fun Content(
             )
         }
     }
-
-}
-
-@Composable
-fun DatePickerRow(
-    label: String,
-    selectedDate: LocalDate,
-    onOpenDateSelection: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
-            .height(56.dp)
-            .fillMaxWidth()
-    ) {
-        BasicText(
-            text = label,
-            style = Typography.body1.copy(
-                color = MaterialTheme.colorScheme.onBackground,
-            ),
-        )
-
-        HorizontalSpacer(24.dp)
-
-        DatePickerInput(
-            selectedDate = selectedDate,
-            onClick = onOpenDateSelection,
-        )
-    }
 }
 
 @Composable
@@ -386,53 +351,6 @@ private fun InfoRow(
                     color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold,
                 ),
-        )
-    }
-}
-
-@Composable
-private fun InputRow(
-    label: String,
-    initialValue: String,
-    onInputChanged: (String) -> Unit,
-    modifier: Modifier = Modifier,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-) {
-    var value by remember { mutableStateOf(initialValue) }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier =
-            modifier
-                .fillMaxWidth()
-                .height(56.dp),
-    ) {
-        BasicText(
-            text = label,
-            style =
-                Typography.body1.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
-        )
-
-        HorizontalSpacer(24.dp)
-
-        BasicTextField(
-            text = value,
-            onTextChanged = {
-                if (it.length <= 4) {
-                    value = it
-                    onInputChanged(value)
-                }
-            },
-            textStyle =
-                Typography.body1.copy(
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onBackground,
-                ),
-            keyboardOptions = keyboardOptions,
-            modifier = Modifier.width(92.dp),
         )
     }
 }

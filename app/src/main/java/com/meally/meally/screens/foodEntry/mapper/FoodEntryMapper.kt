@@ -5,7 +5,7 @@ import com.meally.domain.food.Food
 import com.meally.domain.mealType.MealType
 import com.meally.meally.common.food.viewState.FoodInfoViewState
 import com.meally.meally.common.food.viewState.FoodItemViewState
-import com.meally.meally.screens.foodInfo.ui.model.FoodEntryViewState
+import com.meally.meally.screens.foodEntry.ui.model.FoodEntryViewState
 import java.text.NumberFormat
 import java.time.LocalDate
 

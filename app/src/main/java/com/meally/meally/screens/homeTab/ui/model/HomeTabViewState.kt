@@ -7,4 +7,5 @@ data class HomeTabViewState(
     val isLoading: Boolean,
     val diaryEntries: List<DiaryEntry>,
     val selectedDate: LocalDate,
+    val weight: Double?,
 )

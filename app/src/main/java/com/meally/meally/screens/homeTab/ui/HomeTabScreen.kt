@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +45,8 @@ import com.meally.domain.mealType.MealType
 import com.meally.meally.R
 import com.meally.meally.common.components.AppBar
 import com.meally.meally.common.components.BasicText
+import com.meally.meally.common.components.HorizontalSpacer
+import com.meally.meally.common.components.OutlinedBasicButton
 import com.meally.meally.common.components.VerticalSpacer
 import com.meally.meally.common.components.datePicker.DatePickerInput
 import com.meally.meally.common.components.datePicker.DatePickerModal
@@ -74,6 +78,7 @@ fun HomeTabScreen(
             navigator.navigate(FoodEntryOptionsScreenDestination)
         },
         onDateSelected = viewModel::selectDate,
+        onAddWeightClicked = viewModel::addWeight,
         onProfileClicked = {
             navigator.navigate(SignupScreenDestination)
         },
@@ -89,6 +94,7 @@ fun HomeTabScreenStateless(
     state: HomeTabViewState,
     onAddClicked: () -> Unit = {},
     onDateSelected: (LocalDate) -> Unit = {},
+    onAddWeightClicked: () -> Unit = {},
     onProfileClicked: () -> Unit = {},
 ) {
 
@@ -111,7 +117,8 @@ fun HomeTabScreenStateless(
             )
             Content(
                 state = state,
-                onOpenDatePicker = { isDatePickerShown = true }
+                onOpenDatePicker = { isDatePickerShown = true },
+                onAddWeightClicked = onAddWeightClicked,
             )
         }
 
@@ -145,10 +152,12 @@ fun HomeTabScreenStateless(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ColumnScope.Content(
     state: HomeTabViewState,
     onOpenDatePicker: () -> Unit,
+    onAddWeightClicked: () -> Unit,
 ) {
 
     Column(
@@ -180,6 +189,16 @@ fun ColumnScope.Content(
                     textAlign = TextAlign.Center,
                 )
             )
+
+            if (state.weight != null) {
+                BasicText(
+                    text = "${state.weight} kg",
+                    style = Typography.body2.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    ),
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
+            }
         }
 
         VerticalSpacer(16.dp)
@@ -206,11 +225,40 @@ fun ColumnScope.Content(
 
         }
 
-        DatePickerInput(
-            selectedDate = state.selectedDate,
-            onClick = onOpenDatePicker,
-            modifier = Modifier.align(Alignment.Start).padding(top = 16.dp)
-        )
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
+        ){
+            DatePickerInput(
+                selectedDate = state.selectedDate,
+                onClick = onOpenDatePicker,
+                textStyle = Typography.body2.copy(
+                    color = MaterialTheme.colorScheme.onBackground
+                ),
+            )
+            if (state.weight == null) {
+                HorizontalSpacer(8.dp)
+                OutlinedBasicButton(
+                    onClick = onAddWeightClicked,
+                ) {
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_plus),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        HorizontalSpacer(4.dp)
+                        BasicText(
+                            text = "Add weight",
+                            style = Typography.body2.copy(
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
 
         HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
@@ -345,6 +393,7 @@ private fun HomeTabPreview() {
                     }
                 },
                 selectedDate = LocalDate.now().plusDays(2),
+                weight = 75.3,
             )
         )
     }
