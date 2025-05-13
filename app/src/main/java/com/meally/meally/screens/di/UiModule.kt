@@ -8,6 +8,7 @@ import com.meally.meally.screens.foodInfo.di.foodInfoModule
 import com.meally.meally.screens.homeTab.di.homeTabModule
 import com.meally.meally.screens.startup.di.startupModule
 import com.meally.meally.screens.weightEntry.di.weightEntryModule
+import com.meally.meally.weightGraph.di.weightGraphModule
 
 val screensModule =
     barcodeScanModule +
@@ -17,4 +18,5 @@ val screensModule =
     foodEntryOptionsModule +
     foodEntryModule +
     homeTabModule +
-    weightEntryModule
+    weightEntryModule +
+    weightGraphModule

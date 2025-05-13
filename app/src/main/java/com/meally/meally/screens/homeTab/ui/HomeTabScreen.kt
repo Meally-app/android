@@ -63,7 +63,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.time.LocalDate
 
-val GOAL_CALORIES = 2000
+private const val GOAL_CALORIES = 2000
 
 @Destination
 @Composable
