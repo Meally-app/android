@@ -59,7 +59,7 @@ import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 data class FoodEntryScreenNavArgs(
-    val barcode: String,
+    val barcode: String?,
 )
 
 @Destination(navArgsDelegate = FoodEntryScreenNavArgs::class)
@@ -137,6 +137,7 @@ private fun FoodEntryScreenStateless(
                     item = state.foodInfoViewState.foodItem,
                     mealTypeOptions = state.mealTypeOptions,
                     selectedDate = state.selectedDate,
+                    isManualEntry = state.isManualEntry,
                     onAmountChanged = onAmountChanged,
                     onMealTypeSelected = onMealTypeSelected,
                     onDateSelected = onDateSelected,
@@ -152,6 +153,7 @@ private fun Content(
     item: FoodItemViewState,
     mealTypeOptions: Map<String, MealType>,
     selectedDate: LocalDate,
+    isManualEntry: Boolean,
     onDateSelected: (LocalDate) -> Unit,
     onAmountChanged: (String) -> Unit,
     onMealTypeSelected: (MealType) -> Unit,
@@ -203,7 +205,7 @@ private fun Content(
             VerticalSpacer(32.dp)
 
             InputRow(
-                label = "Amount (${item.unitOfMeasurement}):",
+                label = if (isManualEntry) "Calories" else "Amount (${item.unitOfMeasurement}):",
                 initialValue = "100",
                 onInputChanged = onAmountChanged,
                 keyboardOptions =
@@ -236,29 +238,32 @@ private fun Content(
                 ),
             )
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier =
-                Modifier
-                    .fillMaxWidth(),
-            ) {
-                InfoRow(
-                    label = "Calories",
-                    value = item.calories,
-                )
-                InfoRow(
-                    label = "Carbohydrates",
-                    value = item.carbs,
-                )
-                InfoRow(
-                    label = "Protein",
-                    value = item.protein,
-                )
-                InfoRow(
-                    label = "Fat",
-                    value = item.fat,
-                )
+            if (!isManualEntry) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier =
+                    Modifier
+                        .fillMaxWidth(),
+                ) {
+                    InfoRow(
+                        label = "Calories",
+                        value = item.calories,
+                    )
+                    InfoRow(
+                        label = "Carbohydrates",
+                        value = item.carbs,
+                    )
+                    InfoRow(
+                        label = "Protein",
+                        value = item.protein,
+                    )
+                    InfoRow(
+                        label = "Fat",
+                        value = item.fat,
+                    )
+                }
             }
+
 
             Spacer(Modifier.weight(1f))
 
@@ -364,6 +369,7 @@ private fun LoadingPreview() {
                 foodInfoViewState = FoodInfoViewState.Loading,
                 mealTypeOptions = mapOf(),
                 selectedDate = LocalDate.now(),
+                isManualEntry = false,
             )
         )
     }
@@ -389,6 +395,7 @@ private fun LoadedPreview() {
                 ),
                 mealTypeOptions = mapOf("Breakfast" to MealType("breakfast", 1)),
                 selectedDate = LocalDate.now(),
+                isManualEntry = false,
             )
 
         )

@@ -33,10 +33,10 @@ class DiaryRepositoryImpl(
         }
     }
 
-    override suspend fun enterFood(date: LocalDate, food: Food, mealType: MealType, amount: Double) = safeApiCall<Unit> {
+    override suspend fun enterFood(date: LocalDate, food: Food?, mealType: MealType, amount: Double) = safeApiCall<Unit> {
         meallyAppApi.foodEntry(
             FoodEntryInsertDto(
-                foodId = food.id,
+                foodId = food?.id,
                 mealType = mealType.name,
                 amount = amount,
                 date = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))

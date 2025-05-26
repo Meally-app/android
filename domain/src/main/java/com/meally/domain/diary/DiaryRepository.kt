@@ -11,5 +11,5 @@ interface DiaryRepository {
 
     suspend fun getDiarySummary(from: LocalDate, to: LocalDate): Resource<List<DiarySummaryDay>>
 
-    suspend fun enterFood(date: LocalDate, food: Food, mealType: MealType, amount: Double): Resource<Unit>
+    suspend fun enterFood(date: LocalDate, food: Food?, mealType: MealType, amount: Double): Resource<Unit>
 }

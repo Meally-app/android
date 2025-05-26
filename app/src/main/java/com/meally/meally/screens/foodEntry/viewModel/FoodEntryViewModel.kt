@@ -51,12 +51,12 @@ class FoodEntryViewModel(
 
     val state =
         combine(food, amount, isLoading, mealTypes, selectedDate) { food, amount, isLoading, mealTypes, selectedDate ->
-            foodEntryMapper(food, amount, isLoading, mealTypes, selectedDate)
+            foodEntryMapper(food, amount, isLoading, mealTypes, selectedDate, barcode == null)
         }.onStart { loadFoodData(barcode) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5000),
-                initialValue = foodEntryMapper(food.value, amount.value, isLoading.value, mealTypes.value, selectedDate.value),
+                initialValue = foodEntryMapper(food.value, amount.value, isLoading.value, mealTypes.value, selectedDate.value, barcode == null),
             )
 
     fun amountChanged(value: String) {
@@ -73,7 +73,7 @@ class FoodEntryViewModel(
         viewModelScope.launch {
             diaryRepository.enterFood(
                 date = selectedDate.value,
-                food = foodVal,
+                food = barcode?.let { foodVal },
                 mealType = selectedMealType.value,
                 amount = amount.value.toDouble()
             ).onSuccess {
@@ -96,12 +96,14 @@ class FoodEntryViewModel(
         selectedDate.update { date }
     }
 
-    private fun loadFoodData(barcode: String) {
+    private fun loadFoodData(barcode: String?) {
         viewModelScope.launch(Dispatchers.Default) {
             listOf(
                 async {
-                    foodRepository.getFood(Barcode(barcode)).let { food ->
-                        this@FoodEntryViewModel.food.update { food }
+                    if (barcode != null) {
+                        foodRepository.getFood(Barcode(barcode)).let { food ->
+                            this@FoodEntryViewModel.food.update { food }
+                        }
                     }
                 },
                 async {

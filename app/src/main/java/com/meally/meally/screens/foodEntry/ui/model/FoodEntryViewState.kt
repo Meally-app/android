@@ -8,4 +8,5 @@ data class FoodEntryViewState(
     val foodInfoViewState: FoodInfoViewState,
     val mealTypeOptions: Map<String, MealType>,
     val selectedDate: LocalDate,
+    val isManualEntry: Boolean,
 )

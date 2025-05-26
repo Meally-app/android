@@ -21,10 +21,12 @@ fun foodEntryMapper(
     isLoading: Boolean,
     mealTypes: List<MealType>,
     selectedDate: LocalDate,
+    isManualEntry: Boolean,
 ): FoodEntryViewState = FoodEntryViewState(
-    foodInfoViewState = mapFoodInfo(food, isLoading, amount),
+    foodInfoViewState = mapFoodInfo(food, isLoading, amount, isManualEntry),
     mealTypeOptions = mapMealTypes(mealTypes),
     selectedDate = selectedDate,
+    isManualEntry = isManualEntry,
 )
 
 private fun mapMealTypes(mealTypes: List<MealType>) = mealTypes.associateBy { it.name.replaceFirstChar { it.uppercase() } }
@@ -33,9 +35,24 @@ private fun mapFoodInfo(
     food: Resource<Food>,
     isLoading: Boolean,
     amount: Int,
+    isManualEntry: Boolean,
 ): FoodInfoViewState {
     if (isLoading) {
         return FoodInfoViewState.Loading
+    }
+
+    if (isManualEntry) {
+        return FoodInfoViewState.Loaded(
+            FoodItemViewState(
+                name = "Manual entry",
+                imageUrl = null,
+                calories = format(100.0, amount),
+                carbs = "0",
+                fat = "0",
+                protein = "0",
+                unitOfMeasurement = "",
+            )
+        )
     }
 
     return when (food) {

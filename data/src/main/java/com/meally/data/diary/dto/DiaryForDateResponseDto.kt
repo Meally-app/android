@@ -12,14 +12,14 @@ import java.time.format.DateTimeFormatter
 
 @Serializable
 data class DiaryForDateResponseDto(
-    val food: FoodDto,
+    val food: FoodDto?,
     val mealType: MealTypeDto,
     val amount: Double,
     val date: String,
 )
 
 fun DiaryForDateResponseDto.toDomain() = DiaryEntry(
-    food = food.toDomain(),
+    food = food?.toDomain(),
     mealType = mealType.toDomain(),
     amount = amount,
     date = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyy-MM-dd")),

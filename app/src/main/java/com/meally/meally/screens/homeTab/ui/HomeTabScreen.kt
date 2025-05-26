@@ -173,7 +173,7 @@ fun ColumnScope.Content(
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
 
-        val consumed = state.diaryEntries.sumOf { it.food.calories * it.amount / 100.0 }.toInt()
+        val consumed = state.diaryEntries.sumOf { it.food?.let { food -> food.calories * it.amount / 100.0 } ?: it.amount  }.toInt()
 
         Box(
             contentAlignment = Alignment.Center,
@@ -299,7 +299,7 @@ fun FoodList(
             ){
                 Column {
                     BasicText(
-                        text = it.food.name,
+                        text = it.food?.name ?: "Manual entry",
                         style = Typography.h3
                     )
                     VerticalSpacer(4.dp)
@@ -310,7 +310,7 @@ fun FoodList(
                 }
 
                 BasicText(
-                    text = "${(it.food.calories * it.amount / 100.0).toInt()} kcal",
+                    text = "${(it.food?.let { food -> food.calories * it.amount / 100.0 } ?: it.amount).toInt()} kcal",
                     style = Typography.body1
                 )
             }
