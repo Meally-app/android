@@ -7,6 +7,7 @@ import com.meally.domain.weight.Weight
 import com.meally.meally.common.time.util.toEpochMillis
 import com.meally.meally.screens.userGraph.state.UserGraphState
 import com.meally.meally.screens.userGraph.ui.model.UserGraphViewState
+import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import kotlin.math.roundToInt
 
@@ -27,7 +28,12 @@ fun userGraphMapper(state: UserGraphState, startDate: LocalDate, endDate: LocalD
 
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-private fun getDates(startDate: LocalDate, endDate: LocalDate) = startDate.datesUntil(endDate.plusDays(1)).toList()
+private fun getDates(startDate: LocalDate, endDate: LocalDate) =
+    try {
+        startDate.datesUntil(endDate.plusDays(1)).toList()
+    } catch (e: IllegalArgumentException) {
+        listOf()
+    }
 
 private fun fillCalories(calories: List<DiarySummaryDay>, dates: List<LocalDate>) =
     buildList {
