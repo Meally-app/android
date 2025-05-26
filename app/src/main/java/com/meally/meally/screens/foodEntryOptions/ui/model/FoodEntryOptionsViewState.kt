@@ -12,5 +12,6 @@ enum class FoodEntryOption(
     @DrawableRes val icon: Int,
 ) {
     BARCODE("Scan barcode", R.drawable.ic_scan_barcode),
+    SEARCH("Search food", R.drawable.ic_search),
     MANUAL("Manual entry", R.drawable.ic_edit),
 }

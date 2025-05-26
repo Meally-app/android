@@ -36,6 +36,11 @@ interface MeallyAppApi {
         @Path("barcode") barcode: String,
     ): FoodDto
 
+    @GET("/public/food/search")
+    suspend fun searchFood(
+        @Query("query") query: String,
+    ): List<FoodDto>
+
     /*
      *   /users
      */

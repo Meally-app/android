@@ -18,4 +18,13 @@ class FoodRepositoryImpl(
         }.map {
             it.toDomain()
         }
+
+    override suspend fun search(query: String): Resource<List<Food>> =
+        safeApiCall {
+            meallyAppApi.searchFood(query)
+        }.map {
+            it.map { it.toDomain() }
+        }
+
+
 }

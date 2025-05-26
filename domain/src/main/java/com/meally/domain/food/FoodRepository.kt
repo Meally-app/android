@@ -5,4 +5,6 @@ import com.meally.domain.common.util.Resource
 
 interface FoodRepository {
     suspend fun getFood(barcode: Barcode): Resource<Food>
+
+    suspend fun search(query: String): Resource<List<Food>>
 }
