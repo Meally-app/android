@@ -28,6 +28,8 @@ import com.meally.meally.common.theme.MeallyTheme
 fun AppBar(
     @DrawableRes leadingIconResource: Int,
     onLeadingIconClicked: () -> Unit,
+    @DrawableRes trailingIconResource: Int? = null,
+    onTrailingIconClicked: () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -39,23 +41,40 @@ fun AppBar(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier =
-                Modifier
-                    .size(40.dp)
-                    .background(MaterialTheme.colorScheme.surface, CircleShape)
-                    .clip(CircleShape)
-                    .clickable { onLeadingIconClicked() }
-                    .padding(8.dp),
-        ) {
-            Icon(
-                painter = painterResource(leadingIconResource),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.fillMaxSize(),
+        AppBarIconButton(
+            iconRes = leadingIconResource,
+            onClick = onLeadingIconClicked,
+        )
+        trailingIconResource?.let {
+            AppBarIconButton(
+                iconRes = it,
+                onClick = onTrailingIconClicked,
             )
         }
+    }
+}
+
+@Composable
+fun AppBarIconButton(
+    @DrawableRes iconRes: Int,
+    onClick: () -> Unit,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+        Modifier
+            .size(40.dp)
+            .background(MaterialTheme.colorScheme.surface, CircleShape)
+            .clip(CircleShape)
+            .clickable { onClick() }
+            .padding(8.dp),
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 
@@ -66,6 +85,7 @@ private fun AppBarPreview() {
         AppBar(
             leadingIconResource = R.drawable.ic_back,
             onLeadingIconClicked = {},
+            trailingIconResource = R.drawable.ic_profile,
         )
     }
 }

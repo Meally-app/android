@@ -56,6 +56,7 @@ import com.meally.meally.common.theme.Typography
 import com.meally.meally.common.time.util.isToday
 import com.meally.meally.screens.destinations.FoodEntryOptionsScreenDestination
 import com.meally.meally.screens.destinations.SignupScreenDestination
+import com.meally.meally.screens.destinations.UserGraphScreenDestination
 import com.meally.meally.screens.homeTab.ui.model.HomeTabViewState
 import com.meally.meally.screens.homeTab.viewModel.HomeTabViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -82,6 +83,9 @@ fun HomeTabScreen(
         onProfileClicked = {
             navigator.navigate(SignupScreenDestination)
         },
+        onGraphsClicked = {
+            navigator.navigate(UserGraphScreenDestination)
+        }
     )
 
     LaunchedEffect(Unit) {
@@ -96,6 +100,7 @@ fun HomeTabScreenStateless(
     onDateSelected: (LocalDate) -> Unit = {},
     onAddWeightClicked: () -> Unit = {},
     onProfileClicked: () -> Unit = {},
+    onGraphsClicked: () -> Unit = {},
 ) {
 
     var isDatePickerShown by remember { mutableStateOf(false) }
@@ -114,6 +119,8 @@ fun HomeTabScreenStateless(
             AppBar(
                 leadingIconResource = R.drawable.ic_profile,
                 onLeadingIconClicked = onProfileClicked,
+                trailingIconResource = R.drawable.ic_graph,
+                onTrailingIconClicked = onGraphsClicked,
             )
             Content(
                 state = state,

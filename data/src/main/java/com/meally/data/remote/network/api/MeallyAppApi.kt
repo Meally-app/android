@@ -1,12 +1,14 @@
 package com.meally.data.remote.network.api
 
 import com.meally.data.diary.dto.DiaryForDateResponseDto
+import com.meally.data.diary.dto.DiarySummaryDayDto
 import com.meally.data.diary.dto.FoodEntryInsertDto
 import com.meally.data.food.dto.FoodDto
 import com.meally.data.mealType.dto.MealTypeDto
 import com.meally.data.user.dto.UserDto
 import com.meally.data.util.ApiResponse
 import com.meally.data.weight.dto.WeightDto
+import com.meally.domain.diary.DiarySummaryDay
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -47,6 +49,12 @@ interface MeallyAppApi {
 
     @GET("/diary")
     suspend fun diary(@Query("date") date: LocalDate): List<DiaryForDateResponseDto>
+
+    @GET("/diary/summary")
+    suspend fun diarySummary(
+        @Query("from") from: LocalDate,
+        @Query("to") to: LocalDate,
+    ): List<DiarySummaryDayDto>
 
     @POST("/food-entry")
     suspend fun foodEntry(@Body request: FoodEntryInsertDto)

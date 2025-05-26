@@ -13,6 +13,7 @@ private val DarkColorScheme =
     darkColorScheme(
         primary = Color(0xFFDA2C38),
         secondary = Color(0xFF2C2C54),
+        tertiary = Color(0xFFE0CA3C),
         background = Color(0xFF222222),
         surface = Color(0xFF353634),
         onBackground = Color.White,
@@ -22,6 +23,7 @@ private val LightColorScheme =
     lightColorScheme(
         primary = Color(0xFFDA2C38),
         secondary = Color(0xFF2C2C54),
+        tertiary = Color(0xFFE0CA3C),
         background = Color(0xFFFBFBFF),
         surface = Color(0xFFEDE7D9),
         onBackground = Color.Black,
