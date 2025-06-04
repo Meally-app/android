@@ -26,5 +26,12 @@ class FoodRepositoryImpl(
             it.map { it.toDomain() }
         }
 
+    override suspend fun recentFood(): Resource<List<Food>> =
+        safeApiCall {
+            meallyAppApi.recentFood()
+        }.map {
+            it.map { it.toDomain() }
+        }
+
 
 }

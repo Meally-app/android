@@ -7,7 +7,7 @@ import java.time.LocalDate
 
 interface DiaryRepository {
 
-    suspend fun getDiaryEntry(date: LocalDate): Resource<List<DiaryEntry>>
+    suspend fun getDiaryEntry(date: LocalDate): Resource<DiaryEntry>
 
     suspend fun getDiarySummary(from: LocalDate, to: LocalDate): Resource<List<DiarySummaryDay>>
 

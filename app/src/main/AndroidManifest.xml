@@ -29,6 +29,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".deeplinkHandler.DeeplinkHandlerActivity"
+            android:exported="true">
+
+            <intent-filter android:label="Strava Redirect">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="meally"
+                    android:host="strava-auth" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

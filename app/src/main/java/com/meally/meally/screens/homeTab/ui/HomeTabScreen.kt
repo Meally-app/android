@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.meally.domain.diary.DiaryEntry
+import com.meally.domain.diary.FoodEntry
 import com.meally.domain.food.Food
 import com.meally.domain.mealType.MealType
 import com.meally.meally.R
@@ -53,18 +53,16 @@ import com.meally.meally.common.components.datePicker.DatePickerModal
 import com.meally.meally.common.navigation.Navigator
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.common.theme.Typography
-import com.meally.meally.common.time.util.isToday
 import com.meally.meally.screens.destinations.FoodEntryOptionsScreenDestination
 import com.meally.meally.screens.destinations.SignupScreenDestination
 import com.meally.meally.screens.destinations.UserGraphScreenDestination
+import com.meally.meally.screens.homeTab.ui.model.CaloriesPieChartValues
 import com.meally.meally.screens.homeTab.ui.model.HomeTabViewState
 import com.meally.meally.screens.homeTab.viewModel.HomeTabViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 import java.time.LocalDate
-
-private const val GOAL_CALORIES = 2000
 
 @Destination
 @Composable
@@ -173,8 +171,6 @@ fun ColumnScope.Content(
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
 
-        val consumed = state.diaryEntries.sumOf { it.food?.let { food -> food.calories * it.amount / 100.0 } ?: it.amount  }.toInt()
-
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
@@ -183,14 +179,20 @@ fun ColumnScope.Content(
                 .clip(RoundedCornerShape(24.dp))
                 .padding(24.dp)
         ) {
-            DonutPieChart(
-                slices = listOf(consumed.toFloat() to MaterialTheme.colorScheme.primary, GOAL_CALORIES - consumed.toFloat() to MaterialTheme.colorScheme.background),
-                strokeWidth = 45f,
-                modifier = Modifier.size(120.dp)
-            )
+            with(state.caloriesPieChartValues) {
+                DonutPieChart(
+                    slices = listOf(
+                        consumed to MaterialTheme.colorScheme.primary,
+                        remaining to MaterialTheme.colorScheme.background,
+                        exercise to MaterialTheme.colorScheme.secondary,
+                    ),
+                    strokeWidth = 45f,
+                    modifier = Modifier.size(120.dp)
+                )
+            }
 
             BasicText(
-                text = "${GOAL_CALORIES - consumed}\nLeft",
+                text = "${state.caloriesPieChartValues.remaining.toInt()}\nLeft",
                 style = Typography.h3.copy(
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
@@ -216,17 +218,17 @@ fun ColumnScope.Content(
         ){
             DescriptionCard(
                 icon = R.drawable.ic_flag,
-                label = GOAL_CALORIES.toString(),
+                label = state.goalCalories.toString(),
                 modifier = Modifier.weight(1f)
             )
             DescriptionCard(
                 icon = R.drawable.ic_fire,
-                label = "0",
+                label = state.exerciseCalories.toString(),
                 modifier = Modifier.weight(1f)
             )
             DescriptionCard(
                 icon = R.drawable.ic_cutlery,
-                label = consumed.toString(),
+                label = state.consumedCalories.toString(),
                 modifier = Modifier.weight(1f)
             )
 
@@ -270,7 +272,7 @@ fun ColumnScope.Content(
         HorizontalDivider(Modifier.padding(vertical = 16.dp))
 
         FoodList(
-            state.diaryEntries
+            state.food
         )
 
         VerticalSpacer(40.dp)
@@ -279,7 +281,7 @@ fun ColumnScope.Content(
 
 @Composable
 fun FoodList(
-    list: List<DiaryEntry>,
+    list: List<FoodEntry>,
     modifier: Modifier = Modifier
 ) {
 
@@ -381,10 +383,10 @@ private fun HomeTabPreview() {
         HomeTabScreenStateless(
             state = HomeTabViewState(
                 isLoading = false,
-                diaryEntries = buildList {
+                food = buildList {
                     repeat(5) {
                         add(
-                            DiaryEntry(
+                            FoodEntry(
                                 food = Food.Empty.copy(
                                     name = "Food name",
                                     calories = 140.0,
@@ -399,8 +401,17 @@ private fun HomeTabPreview() {
                         )
                     }
                 },
+                consumedCalories = 653,
+                exerciseCalories = 212,
+                goalCalories = 2000,
                 selectedDate = LocalDate.now().plusDays(2),
                 weight = 75.3,
+                caloriesPieChartValues = CaloriesPieChartValues(
+                    consumed = 653f,
+                    exercise = 212f,
+                    remaining = 1559f,
+                    total = 2212f,
+                )
             )
         )
     }

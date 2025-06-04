@@ -7,5 +7,6 @@ suspend fun <T> safeApiCall(apiCall: suspend () -> T): Resource<T> =
         val result = apiCall()
         Resource.Success(result)
     } catch (e: Exception) {
+        println("[TEST] safeApiCall fail $e")
         Resource.Failure(e)
     }

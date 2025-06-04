@@ -23,10 +23,6 @@ class UserRepositoryImpl(
     override suspend fun test() {
         safeApiCall {
             meallyAppApi.test()
-        }.onSuccess {
-            println("[TEST] success lets go $it")
-        }.onFailure {
-            println("[TEST] you are cooked $it")
         }
     }
 

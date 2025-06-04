@@ -6,6 +6,7 @@ import com.meally.data.remote.network.api.MeallyAppApi
 import com.meally.data.util.safeApiCall
 import com.meally.domain.common.util.Resource
 import com.meally.domain.common.util.map
+import com.meally.domain.common.util.onFailure
 import com.meally.domain.diary.DiaryRepository
 import com.meally.domain.diary.DiarySummaryDay
 import com.meally.domain.food.Food
@@ -20,9 +21,7 @@ class DiaryRepositoryImpl(
     override suspend fun getDiaryEntry(date: LocalDate) = safeApiCall {
         meallyAppApi.diary(date)
     }.map {
-        it.map {
-          it.toDomain()
-        }
+        it.toDomain()
     }
 
     override suspend fun getDiarySummary(from: LocalDate, to: LocalDate): Resource<List<DiarySummaryDay>> = safeApiCall {

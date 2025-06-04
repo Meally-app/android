@@ -2,8 +2,10 @@ package com.meally.meally.screens.homeTab.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.meally.domain.common.util.onFailure
 import com.meally.domain.common.util.onSuccess
 import com.meally.domain.diary.DiaryEntry
+import com.meally.domain.diary.FoodEntry
 import com.meally.domain.diary.DiaryRepository
 import com.meally.domain.weight.Weight
 import com.meally.domain.weight.WeightRepository
@@ -28,24 +30,24 @@ class HomeTabViewModel(
 
     private val selectedDate = MutableStateFlow(LocalDate.now())
 
-    private val diaryEntries = MutableStateFlow(emptyList<DiaryEntry>())
+    private val diaryEntry = MutableStateFlow<DiaryEntry?>(null)
 
     private val weight = MutableStateFlow<Weight?>(null)
 
     private val isLoading = MutableStateFlow(true)
 
-    val state = combine(diaryEntries, selectedDate, isLoading, weight) { diaryEntries, selectedDate, isLoading, weight ->
-        homeTabMapper(diaryEntries, selectedDate, isLoading, weight)
+    val state = combine(diaryEntry, selectedDate, isLoading, weight) { diaryEntry, selectedDate, isLoading, weight ->
+        homeTabMapper(diaryEntry, selectedDate, isLoading, weight)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = homeTabMapper(diaryEntries.value, selectedDate.value, isLoading.value, weight.value)
+        initialValue = homeTabMapper(diaryEntry.value, selectedDate.value, isLoading.value, weight.value)
     )
 
     fun refresh() {
         viewModelScope.launch {
             listOf(
-                async { diaryRepository.getDiaryEntry(selectedDate.value).onSuccess { entries -> diaryEntries.update { entries } } },
+                async { diaryRepository.getDiaryEntry(selectedDate.value).onSuccess { diary -> diaryEntry.update { diary } } },
                 async { weightRepository.getWeightForDate(selectedDate.value).onSuccess { todayWeight -> weight.update { todayWeight } } },
             ).awaitAll()
             isLoading.update { false }
