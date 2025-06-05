@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -53,6 +52,7 @@ import com.meally.meally.common.components.datePicker.DatePickerModal
 import com.meally.meally.common.navigation.Navigator
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.common.theme.Typography
+import com.meally.meally.screens.destinations.ExerciseScreenDestination
 import com.meally.meally.screens.destinations.FoodEntryOptionsScreenDestination
 import com.meally.meally.screens.destinations.SignupScreenDestination
 import com.meally.meally.screens.destinations.UserGraphScreenDestination
@@ -83,6 +83,9 @@ fun HomeTabScreen(
         },
         onGraphsClicked = {
             navigator.navigate(UserGraphScreenDestination)
+        },
+        onExerciseClicked = {
+            navigator.navigate(ExerciseScreenDestination(state.selectedDate))
         }
     )
 
@@ -99,6 +102,7 @@ fun HomeTabScreenStateless(
     onAddWeightClicked: () -> Unit = {},
     onProfileClicked: () -> Unit = {},
     onGraphsClicked: () -> Unit = {},
+    onExerciseClicked: () -> Unit = {},
 ) {
 
     var isDatePickerShown by remember { mutableStateOf(false) }
@@ -124,6 +128,7 @@ fun HomeTabScreenStateless(
                 state = state,
                 onOpenDatePicker = { isDatePickerShown = true },
                 onAddWeightClicked = onAddWeightClicked,
+                onExerciseClicked = onExerciseClicked,
             )
         }
 
@@ -159,10 +164,11 @@ fun HomeTabScreenStateless(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ColumnScope.Content(
+fun Content(
     state: HomeTabViewState,
     onOpenDatePicker: () -> Unit,
     onAddWeightClicked: () -> Unit,
+    onExerciseClicked: () -> Unit,
 ) {
 
     Column(
@@ -224,7 +230,8 @@ fun ColumnScope.Content(
             DescriptionCard(
                 icon = R.drawable.ic_fire,
                 label = state.exerciseCalories.toString(),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                onClick = onExerciseClicked,
             )
             DescriptionCard(
                 icon = R.drawable.ic_cutlery,
@@ -326,6 +333,7 @@ fun DescriptionCard(
     @DrawableRes icon: Int,
     label: String,
     modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null,
 ) {
     Column (
         verticalArrangement = Arrangement.Center,
@@ -333,7 +341,12 @@ fun DescriptionCard(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(12.dp))
             .clip(RoundedCornerShape(12.dp))
-            .padding(8.dp),
+            .then(
+                onClick?.let {
+                    Modifier.clickable { it() }
+                } ?: Modifier
+            )
+            .padding(8.dp)
     ) {
         Icon(
             painter = painterResource(icon),

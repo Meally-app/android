@@ -1,5 +1,6 @@
 package com.meally.meally.common.navigation
 
+import android.content.Intent
 import androidx.navigation.NavOptionsBuilder
 import com.ramcosta.composedestinations.spec.Direction
 
@@ -14,4 +15,6 @@ interface Navigator {
     fun goBack()
 
     fun goToHome()
+
+    fun launchIntent(intent: Intent)
 }

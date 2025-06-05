@@ -4,6 +4,7 @@ import com.meally.data.diary.dto.DiaryForDateResponseDto
 import com.meally.data.diary.dto.FoodEntryDto
 import com.meally.data.diary.dto.DiarySummaryDayDto
 import com.meally.data.diary.dto.FoodEntryInsertDto
+import com.meally.data.exercise.dto.ExerciseForDateResponseDto
 import com.meally.data.food.dto.FoodDto
 import com.meally.data.mealType.dto.MealTypeDto
 import com.meally.data.user.dto.UserDto
@@ -83,4 +84,21 @@ interface MeallyAppApi {
 
     @GET("/weight")
     suspend fun getWeight(@Query("from") from: LocalDate, @Query("to") to: LocalDate): List<WeightDto>
+
+    /*
+     *   /strava
+     */
+
+    @POST("/strava/token")
+    suspend fun sendStravaCode(@Query("code") code: String)
+
+    @GET("/strava/sync")
+    suspend fun syncStrava(@Query("date") date: LocalDate)
+
+    /*
+     *   /exercise
+     */
+
+    @GET("/exercise")
+    suspend fun exerciseForDate(@Query("date") date: LocalDate): ExerciseForDateResponseDto
 }

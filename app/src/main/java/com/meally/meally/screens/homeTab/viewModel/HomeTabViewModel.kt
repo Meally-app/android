@@ -12,6 +12,7 @@ import com.meally.domain.weight.WeightRepository
 import com.meally.meally.common.navigation.Navigator
 import com.meally.meally.screens.destinations.WeightEntryScreenDestination
 import com.meally.meally.screens.homeTab.homeTabMapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +46,7 @@ class HomeTabViewModel(
     )
 
     fun refresh() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Default) {
             listOf(
                 async { diaryRepository.getDiaryEntry(selectedDate.value).onSuccess { diary -> diaryEntry.update { diary } } },
                 async { weightRepository.getWeightForDate(selectedDate.value).onSuccess { todayWeight -> weight.update { todayWeight } } },

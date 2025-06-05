@@ -11,10 +11,13 @@ import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.screens.NavGraphs
 import com.ramcosta.composedestinations.DestinationsNavHost
 import org.koin.compose.koinInject
+import org.koin.core.context.GlobalContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val koin = GlobalContext.get()
+        koin.setProperty("activity", this)
         setContent {
             MeallyTheme {
                 MeallyApp()

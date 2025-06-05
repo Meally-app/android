@@ -36,27 +36,12 @@ import com.meally.meally.common.components.focusClearer
 import com.meally.meally.common.theme.MeallyTheme
 import com.meally.meally.screens.weightEntry.viewModel.WeightEntryViewModel
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.navargs.DestinationsNavTypeSerializer
-import com.ramcosta.composedestinations.navargs.NavTypeSerializer
-import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 data class WeightEntryScreenNavArgs(
     val date: LocalDate
 )
-
-@NavTypeSerializer
-class LocalDateSerializer : DestinationsNavTypeSerializer<LocalDate> {
-    override fun fromRouteString(routeStr: String): LocalDate {
-        return LocalDate.parse(routeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-    }
-
-    override fun toRouteString(value: LocalDate): String {
-        return value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-    }
-}
 
 @Destination(navArgsDelegate = WeightEntryScreenNavArgs::class)
 @Composable

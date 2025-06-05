@@ -6,9 +6,16 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.meally.domain.thirdParty.ThirdPartyRepository
 import com.meally.meally.MainActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.get
 
 class DeeplinkHandlerActivity : AppCompatActivity() {
+
+    private val thirdPartyRepository: ThirdPartyRepository = get()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +38,9 @@ class DeeplinkHandlerActivity : AppCompatActivity() {
 
         if (code != null) {
             Log.d("StravaOAuth", "Authorization code: $code")
-            // TODO: send code to your backend or exchange for access_token
+            CoroutineScope(Dispatchers.IO).launch {
+                thirdPartyRepository.stravaCode(code)
+            }
         } else if (error != null) {
             Toast.makeText(this, "Strava auth failed: $error", Toast.LENGTH_LONG).show()
         }

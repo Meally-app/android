@@ -56,6 +56,11 @@ android {
             dimension = "environment"
             loadProperties("prod")
         }
+
+        create("dev") {
+            dimension = "environment"
+            loadProperties("dev")
+        }
     }
 
     compileOptions {
@@ -133,8 +138,8 @@ fun ProductFlavor.loadProperties(flavor: String) {
             val type =
                 when {
                     valueStr.equals("true", ignoreCase = true) ||
-                        valueStr.equals("false", ignoreCase = true) -> "Boolean"
-                    valueStr.toIntOrNull() != null -> "Int"
+                        valueStr.equals("false", ignoreCase = true) -> "boolean"
+                    valueStr.toIntOrNull() != null -> "int"
                     else -> "String"
                 }
             buildConfigField(
