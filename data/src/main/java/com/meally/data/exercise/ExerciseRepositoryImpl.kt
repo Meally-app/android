@@ -1,9 +1,9 @@
 package com.meally.data.exercise
 
 import com.meally.data.diary.dto.toDomain
+import com.meally.data.meals.dto.toDomain
 import com.meally.data.remote.network.api.MeallyAppApi
 import com.meally.data.util.safeApiCall
-import com.meally.domain.common.util.Resource
 import com.meally.domain.common.util.map
 import com.meally.domain.exercise.ExerciseForDate
 import com.meally.domain.exercise.ExerciseRepository

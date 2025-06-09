@@ -9,11 +9,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -56,7 +60,9 @@ import com.meally.meally.screens.destinations.ExerciseScreenDestination
 import com.meally.meally.screens.destinations.FoodEntryOptionsScreenDestination
 import com.meally.meally.screens.destinations.SignupScreenDestination
 import com.meally.meally.screens.destinations.UserGraphScreenDestination
+import com.meally.meally.screens.destinations.UserMealsScreenDestination
 import com.meally.meally.screens.homeTab.ui.model.CaloriesPieChartValues
+import com.meally.meally.screens.homeTab.ui.model.FoodListItem
 import com.meally.meally.screens.homeTab.ui.model.HomeTabViewState
 import com.meally.meally.screens.homeTab.viewModel.HomeTabViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -81,8 +87,8 @@ fun HomeTabScreen(
         onProfileClicked = {
             navigator.navigate(SignupScreenDestination)
         },
-        onGraphsClicked = {
-            navigator.navigate(UserGraphScreenDestination)
+        onMealsClicked = {
+            navigator.navigate(UserMealsScreenDestination)
         },
         onExerciseClicked = {
             navigator.navigate(ExerciseScreenDestination(state.selectedDate))
@@ -101,7 +107,7 @@ fun HomeTabScreenStateless(
     onDateSelected: (LocalDate) -> Unit = {},
     onAddWeightClicked: () -> Unit = {},
     onProfileClicked: () -> Unit = {},
-    onGraphsClicked: () -> Unit = {},
+    onMealsClicked: () -> Unit = {},
     onExerciseClicked: () -> Unit = {},
 ) {
 
@@ -116,13 +122,12 @@ fun HomeTabScreenStateless(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
         ) {
             AppBar(
                 leadingIconResource = R.drawable.ic_profile,
                 onLeadingIconClicked = onProfileClicked,
-                trailingIconResource = R.drawable.ic_graph,
-                onTrailingIconClicked = onGraphsClicked,
+                trailingIconResource = R.drawable.ic_chef,
+                onTrailingIconClicked = onMealsClicked,
             )
             Content(
                 state = state,
@@ -171,158 +176,168 @@ fun Content(
     onExerciseClicked: () -> Unit,
 ) {
 
-    Column(
+    LazyColumn (
+        contentPadding = PaddingValues(bottom = 16.dp),
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
 
-        Box(
-            contentAlignment = Alignment.Center,
+        item ("donut_graph"){
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp))
+                    .padding(24.dp)
+                    .animateItem()
+            ) {
+                with(state.caloriesPieChartValues) {
+                    DonutPieChart(
+                        slices = listOf(
+                            consumed to MaterialTheme.colorScheme.primary,
+                            remaining to MaterialTheme.colorScheme.background,
+                            exercise to MaterialTheme.colorScheme.secondary,
+                        ),
+                        strokeWidth = 45f,
+                        modifier = Modifier.size(120.dp)
+                    )
+                }
+
+                BasicText(
+                    text = "${state.caloriesPieChartValues.remaining.toInt()}\nLeft",
+                    style = Typography.h3.copy(
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
+                    )
+                )
+
+                if (state.weight != null) {
+                    BasicText(
+                        text = "${state.weight} kg",
+                        style = Typography.body2.copy(
+                            color = MaterialTheme.colorScheme.onBackground
+                        ),
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    )
+                }
+            }
+
+            VerticalSpacer(16.dp)
+        }
+
+        item ("info_tabs"){
+            Row (
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth().animateItem()
+            ){
+                DescriptionCard(
+                    icon = R.drawable.ic_flag,
+                    label = state.goalCalories.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+                DescriptionCard(
+                    icon = R.drawable.ic_fire,
+                    label = state.exerciseCalories.toString(),
+                    modifier = Modifier.weight(1f),
+                    onClick = onExerciseClicked,
+                )
+                DescriptionCard(
+                    icon = R.drawable.ic_cutlery,
+                    label = state.consumedCalories.toString(),
+                    modifier = Modifier.weight(1f)
+                )
+
+            }
+        }
+
+        item ("flexible_row_items"){
+            FlowRow(
+                modifier = Modifier.fillMaxWidth().padding(top = 16.dp).animateItem()
+            ){
+                DatePickerInput(
+                    selectedDate = state.selectedDate,
+                    onClick = onOpenDatePicker,
+                    textStyle = Typography.body2.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    ),
+                )
+                if (state.weight == null) {
+                    HorizontalSpacer(8.dp)
+                    OutlinedBasicButton(
+                        onClick = onAddWeightClicked,
+                    ) {
+                        Row {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_plus),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            HorizontalSpacer(4.dp)
+                            BasicText(
+                                text = "Add weight",
+                                style = Typography.body2.copy(
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+
+            HorizontalDivider(Modifier.padding(vertical = 16.dp))
+        }
+
+        FoodList(
+            state.items
+        )
+
+        item {
+            VerticalSpacer(40.dp)
+        }
+
+    }
+}
+
+fun LazyListScope.FoodList(
+    list: List<FoodListItem>,
+) {
+    items(list, key = { it.name + it.calories }) {
+        Row (
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(24.dp))
-                .clip(RoundedCornerShape(24.dp))
-                .padding(24.dp)
-        ) {
-            with(state.caloriesPieChartValues) {
-                DonutPieChart(
-                    slices = listOf(
-                        consumed to MaterialTheme.colorScheme.primary,
-                        remaining to MaterialTheme.colorScheme.background,
-                        exercise to MaterialTheme.colorScheme.secondary,
-                    ),
-                    strokeWidth = 45f,
-                    modifier = Modifier.size(120.dp)
+                .padding(bottom = 16.dp)
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                .padding(16.dp)
+                .animateItem()
+        ){
+            Column {
+                BasicText(
+                    text = it.name,
+                    style = Typography.h3.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+                VerticalSpacer(4.dp)
+                BasicText(
+                    text = it.mealType.name.replaceFirstChar { it.uppercase() },
+                    style = Typography.body2.copy(
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
                 )
             }
 
             BasicText(
-                text = "${state.caloriesPieChartValues.remaining.toInt()}\nLeft",
-                style = Typography.h3.copy(
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                )
-            )
-
-            if (state.weight != null) {
-                BasicText(
-                    text = "${state.weight} kg",
-                    style = Typography.body2.copy(
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    modifier = Modifier.align(Alignment.BottomEnd)
-                )
-            }
-        }
-
-        VerticalSpacer(16.dp)
-
-        Row (
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ){
-            DescriptionCard(
-                icon = R.drawable.ic_flag,
-                label = state.goalCalories.toString(),
-                modifier = Modifier.weight(1f)
-            )
-            DescriptionCard(
-                icon = R.drawable.ic_fire,
-                label = state.exerciseCalories.toString(),
-                modifier = Modifier.weight(1f),
-                onClick = onExerciseClicked,
-            )
-            DescriptionCard(
-                icon = R.drawable.ic_cutlery,
-                label = state.consumedCalories.toString(),
-                modifier = Modifier.weight(1f)
-            )
-
-        }
-
-        FlowRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 16.dp)
-        ){
-            DatePickerInput(
-                selectedDate = state.selectedDate,
-                onClick = onOpenDatePicker,
-                textStyle = Typography.body2.copy(
+                text = "${it.calories} kcal",
+                style = Typography.body1.copy(
                     color = MaterialTheme.colorScheme.onBackground
-                ),
-            )
-            if (state.weight == null) {
-                HorizontalSpacer(8.dp)
-                OutlinedBasicButton(
-                    onClick = onAddWeightClicked,
-                ) {
-                    Row {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_plus),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        HorizontalSpacer(4.dp)
-                        BasicText(
-                            text = "Add weight",
-                            style = Typography.body2.copy(
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
-
-        HorizontalDivider(Modifier.padding(vertical = 16.dp))
-
-        FoodList(
-            state.food
-        )
-
-        VerticalSpacer(40.dp)
-    }
-}
-
-@Composable
-fun FoodList(
-    list: List<FoodEntry>,
-    modifier: Modifier = Modifier
-) {
-
-    Column (
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-    ){
-        list.sortedBy { it.mealType.orderInDay }.forEach {
-            Row (
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
-                    .padding(16.dp)
-            ){
-                Column {
-                    BasicText(
-                        text = it.food?.name ?: "Manual entry",
-                        style = Typography.h3
-                    )
-                    VerticalSpacer(4.dp)
-                    BasicText(
-                        text = it.mealType.name.replaceFirstChar { it.uppercase() },
-                        style = Typography.body2
-                    )
-                }
-
-                BasicText(
-                    text = "${(it.food?.let { food -> food.calories * it.amount / 100.0 } ?: it.amount).toInt()} kcal",
-                    style = Typography.body1
                 )
-            }
+            )
         }
     }
 
@@ -396,20 +411,16 @@ private fun HomeTabPreview() {
         HomeTabScreenStateless(
             state = HomeTabViewState(
                 isLoading = false,
-                food = buildList {
+                items = buildList {
                     repeat(5) {
                         add(
-                            FoodEntry(
-                                food = Food.Empty.copy(
-                                    name = "Food name",
-                                    calories = 140.0,
-                                ),
+                            FoodListItem(
+                                name = "Food name",
                                 mealType = MealType(
                                     name = "Breakfast",
                                     orderInDay = 1,
                                 ),
-                                amount = 100.0,
-                                date = LocalDate.now(),
+                                calories = (140 + it).toString()
                             )
                         )
                     }

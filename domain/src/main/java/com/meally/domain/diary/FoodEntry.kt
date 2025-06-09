@@ -19,3 +19,6 @@ data class FoodEntry(
         )
     }
 }
+
+val FoodEntry.calories: Double
+    get() = food?.let { food -> food.calories * amount / 100.0 } ?: amount

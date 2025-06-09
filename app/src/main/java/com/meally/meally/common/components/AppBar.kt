@@ -30,6 +30,7 @@ fun AppBar(
     onLeadingIconClicked: () -> Unit,
     @DrawableRes trailingIconResource: Int? = null,
     onTrailingIconClicked: () -> Unit = {},
+    middleSection: @Composable () -> Unit = {},
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -45,6 +46,7 @@ fun AppBar(
             iconRes = leadingIconResource,
             onClick = onLeadingIconClicked,
         )
+        middleSection()
         trailingIconResource?.let {
             AppBarIconButton(
                 iconRes = it,

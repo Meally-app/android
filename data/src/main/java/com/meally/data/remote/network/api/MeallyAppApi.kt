@@ -1,16 +1,22 @@
 package com.meally.data.remote.network.api
 
 import com.meally.data.diary.dto.DiaryForDateResponseDto
-import com.meally.data.diary.dto.FoodEntryDto
 import com.meally.data.diary.dto.DiarySummaryDayDto
 import com.meally.data.diary.dto.FoodEntryInsertDto
+import com.meally.data.diary.dto.MealEntryInsertDto
 import com.meally.data.exercise.dto.ExerciseForDateResponseDto
 import com.meally.data.food.dto.FoodDto
 import com.meally.data.mealType.dto.MealTypeDto
+import com.meally.data.meals.dto.BrowseMealsDto
+import com.meally.data.meals.dto.InsertMealDto
+import com.meally.data.meals.dto.MealDto
 import com.meally.data.user.dto.UserDto
 import com.meally.data.util.ApiResponse
 import com.meally.data.weight.dto.WeightDto
+import com.meally.domain.common.util.Resource
+import com.meally.domain.meal.Meal
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -68,6 +74,9 @@ interface MeallyAppApi {
     @POST("/food-entry")
     suspend fun foodEntry(@Body request: FoodEntryInsertDto)
 
+    @POST("/meal-entry")
+    suspend fun mealEntry(@Body request: MealEntryInsertDto)
+
     /*
      *   /meal-type
      */
@@ -101,4 +110,33 @@ interface MeallyAppApi {
 
     @GET("/exercise")
     suspend fun exerciseForDate(@Query("date") date: LocalDate): ExerciseForDateResponseDto
+
+    /*
+     *   /meals
+     */
+
+    @GET("/public/meals")
+    suspend fun browseMeals(
+        @Query("query") query: String,
+        @Query("caloriesMin") caloriesMin: Double,
+        @Query("caloriesMax") caloriesMax: Double
+    ): List<BrowseMealsDto>
+
+    @GET("/meals")
+    suspend fun myMeals() : List<MealDto>
+
+    @GET("/meals/{mealId}")
+    suspend fun getMealById(
+        @Path("mealId") mealId: String
+    ): MealDto
+
+    @POST("/meals")
+    suspend fun insertMeal(
+        @Body dto: InsertMealDto
+    ) : MealDto
+
+    @DELETE("/meals/{mealId}")
+    suspend fun deleteMeal(
+        @Path("mealId") mealId: String,
+    )
 }
