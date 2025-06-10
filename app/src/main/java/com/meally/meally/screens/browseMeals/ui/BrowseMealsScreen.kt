@@ -227,7 +227,8 @@ private fun BrowseMealsPreview() {
                             id = "",
                             email = "",
                             username = "Username"
-                        )
+                        ),
+                        isLiked = false,
                     ),
                     BrowseMeal(
                         id = "b",
@@ -237,7 +238,8 @@ private fun BrowseMealsPreview() {
                             id = "",
                             email = "",
                             username = "Username"
-                        )
+                        ),
+                        isLiked = false,
                     ),
                     BrowseMeal(
                         id = "c",
@@ -247,7 +249,8 @@ private fun BrowseMealsPreview() {
                             id = "",
                             email = "",
                             username = "Username"
-                        )
+                        ),
+                        isLiked = false,
                     ),
                 ),
                 searchState = BrowseMealsSearchState(

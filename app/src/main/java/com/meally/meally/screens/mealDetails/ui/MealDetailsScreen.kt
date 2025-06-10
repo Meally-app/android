@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,11 +52,15 @@ fun MealDetailsScreen(
 ) {
 
     val state = viewModel.viewState.collectAsStateWithLifecycle().value
+    val isOwnedByUser = viewModel.isOwnedByUser.collectAsStateWithLifecycle().value
 
     MealDetailsScreenStateless(
         meal = state,
+        isOwnedByUser = isOwnedByUser,
         onBackClicked = viewModel::goBack,
         onAddToDiary = viewModel::addToDiary,
+        onEditClicked = viewModel::editMeal,
+        onLikeClicked = viewModel::likeMeal,
     )
 
 }
@@ -65,8 +68,11 @@ fun MealDetailsScreen(
 @Composable
 private fun MealDetailsScreenStateless(
     meal: Meal?,
+    isOwnedByUser: Boolean,
     onBackClicked: () -> Unit = {},
+    onEditClicked: () -> Unit = {},
     onAddToDiary: () -> Unit = {},
+    onLikeClicked: () -> Unit = {},
 ) {
 
     Column (
@@ -77,12 +83,16 @@ private fun MealDetailsScreenStateless(
         AppBar(
             leadingIconResource = R.drawable.ic_back,
             onLeadingIconClicked = onBackClicked,
+            trailingIconResource = if (isOwnedByUser) R.drawable.ic_edit else null,
+            onTrailingIconClicked = onEditClicked,
         )
 
         if (meal != null) {
             Content(
                 meal = meal,
+                isOwnedByUser = isOwnedByUser,
                 onAddToDiary = onAddToDiary,
+                onLikeClicked = onLikeClicked,
             )
         } else {
             Box (
@@ -99,7 +109,9 @@ private fun MealDetailsScreenStateless(
 @Composable
 private fun Content(
     meal: Meal,
+    isOwnedByUser: Boolean,
     onAddToDiary: () -> Unit,
+    onLikeClicked: () -> Unit,
 ) {
     LazyColumn(
         contentPadding = PaddingValues(vertical = 12.dp),
@@ -118,22 +130,41 @@ private fun Content(
         }
 
         item ("add_button") {
-            OutlinedBasicButton(
-                onClick = onAddToDiary,
-                modifier = Modifier.padding(vertical = 8.dp),
-            ) {
-                Row {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_plus),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                    )
-                    HorizontalSpacer(8.dp)
-                    BasicText(
-                        text = "Add to diary",
-                        style = Typography.body2.copy(color = MaterialTheme.colorScheme.onBackground)
-                    )
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+            ){
+                OutlinedBasicButton(
+                    onClick = onAddToDiary,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                ) {
+                    Row (
+                        verticalAlignment = Alignment.CenterVertically,
+                    ){
+                        Icon(
+                            painter = painterResource(R.drawable.ic_plus),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground,
+                        )
+                        HorizontalSpacer(8.dp)
+                        BasicText(
+                            text = "Add to diary",
+                            style = Typography.body2.copy(color = MaterialTheme.colorScheme.onBackground)
+                        )
+                    }
+                }
+                HorizontalSpacer(16.dp)
+                if (!isOwnedByUser) {
+                    OutlinedBasicButton(
+                        onClick = onLikeClicked,
+                    ) {
+                        Icon(
+                            painter = painterResource(if (meal.isLiked) R.drawable.ic_heart else R.drawable.ic_heart_outline),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
         }
@@ -141,7 +172,9 @@ private fun Content(
         items(meal.foodInMeal, key = { it.food.id + it.amount }) {
             FoodElement(
                 foodInMeal = it,
-                modifier = Modifier.animateItem().padding(vertical = 12.dp),
+                modifier = Modifier
+                    .animateItem()
+                    .padding(vertical = 12.dp),
             )
         }
 
@@ -187,7 +220,9 @@ private fun FoodElement(
             .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
             .padding(16.dp)
     ){
-        Column {
+        Column (
+            modifier = Modifier.weight(1f)
+        ){
             BasicText(
                 text = foodInMeal.food.name,
                 style = Typography.h3.copy(
@@ -217,11 +252,13 @@ private fun FoodElement(
 private fun MealDetailsPreview() {
     MeallyTheme {
         MealDetailsScreenStateless(
+            isOwnedByUser = false,
             meal = Meal(
                 id = "a",
                 name = "Grandma's lasagna",
                 user = User("", "", "Username"),
                 visibility = MealVisibility.PUBLIC,
+                isLiked = false,
                 foodInMeal = listOf(
                     FoodInMeal(
                         food = Food.Empty.copy(
@@ -242,7 +279,7 @@ private fun MealDetailsPreview() {
                     FoodInMeal(
                         food = Food.Empty.copy(
                             id = "c",
-                            name = "Tomato sauce",
+                            name = "Tomato sauce with a long name that doesnt fit",
                             calories = 70.50,
                             unitOfMeasurement = Food.UnitOfMeasurement.MILLILITERS,
                         ),

@@ -13,6 +13,7 @@ data class MealDto(
     val user: UserDto,
     val status: String,
     val foodInMeal: List<FoodInMealDto>,
+    val isLiked: Boolean = false,
 )
 
 fun MealDto.toDomain() = Meal(
@@ -20,5 +21,6 @@ fun MealDto.toDomain() = Meal(
     name = name,
     user = user.toDomain(),
     visibility = MealVisibility.safeValueOf(status),
-    foodInMeal = foodInMeal.map { it.toDomain() }
+    foodInMeal = foodInMeal.map { it.toDomain() },
+    isLiked = isLiked,
 )

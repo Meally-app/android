@@ -29,4 +29,8 @@ interface MealRepository {
     suspend fun deleteMeal(
         meal: Meal
     ): Resource<Unit>
+
+    suspend fun likeMeal(
+        meal: Meal
+    ): Resource<Unit>
 }

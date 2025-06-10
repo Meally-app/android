@@ -82,7 +82,7 @@ fun UserMealsScreenStateless(
                 MealView(
                     meal = it,
                     onMealClicked = { onMealClicked(it) },
-                    modifier = Modifier.animateItem(),
+                    modifier = Modifier.animateItem().padding(vertical = 12.dp),
                 )
             }
         }
@@ -142,6 +142,7 @@ private fun UserMealsPreview() {
                     user = User("", "", ""),
                     visibility = MealVisibility.PUBLIC,
                     foodInMeal = listOf(),
+                    isLiked = false,
                 )
             )
         )

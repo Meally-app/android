@@ -42,11 +42,14 @@ import com.meally.meally.screens.searchFood.ui.model.SearchFoodItem
 import com.meally.meally.screens.searchFood.ui.model.SearchFoodViewState
 import com.meally.meally.screens.searchFood.viewModel.SearchFoodViewModel
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import org.koin.androidx.compose.koinViewModel
 
 @Destination
 @Composable
 fun SearchFoodScreen(
+    resultNavigator: ResultBackNavigator<String>,
+    goBackToMealCreation: Boolean = false,
     viewModel: SearchFoodViewModel = koinViewModel(),
 ) {
     val state = viewModel.viewState.collectAsStateWithLifecycle().value
@@ -55,7 +58,7 @@ fun SearchFoodScreen(
         state = state,
         onBackClicked = viewModel::goBack,
         onInputChanged = viewModel::updateUserInput,
-        onItemClicked = viewModel::itemClicked,
+        onItemClicked = { if (goBackToMealCreation) resultNavigator.navigateBack(it.barcode) else viewModel.itemClicked(it) },
     )
 }
 

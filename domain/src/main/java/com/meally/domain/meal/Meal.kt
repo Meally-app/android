@@ -8,6 +8,7 @@ data class Meal(
     val user: User,
     val visibility: MealVisibility,
     val foodInMeal: List<FoodInMeal>,
+    val isLiked: Boolean,
 ) {
     companion object {
         val Empty = Meal(
@@ -16,6 +17,7 @@ data class Meal(
             user = User.Empty,
             visibility = MealVisibility.UNKNOWN,
             foodInMeal = emptyList(),
+            isLiked = false,
         )
     }
 }

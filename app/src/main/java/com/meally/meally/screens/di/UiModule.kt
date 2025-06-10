@@ -3,6 +3,7 @@ package com.meally.meally.screens.di
 import com.meally.meally.screens.auth.signup.signupModule
 import com.meally.meally.screens.barcodeScan.di.barcodeScanModule
 import com.meally.meally.screens.browseMeals.di.browseMealsModule
+import com.meally.meally.screens.createMeal.di.createMealModule
 import com.meally.meally.screens.exercise.di.exerciseModule
 import com.meally.meally.screens.foodEntry.di.foodEntryModule
 import com.meally.meally.screens.foodEntryOptions.di.foodEntryOptionsModule
@@ -33,4 +34,5 @@ val screensModule =
     browseMealsModule +
     userMealsModule +
     mealDetailsModule +
-    mealEntryModule
+    mealEntryModule +
+    createMealModule

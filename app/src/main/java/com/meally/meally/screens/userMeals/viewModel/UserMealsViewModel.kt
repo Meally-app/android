@@ -6,6 +6,7 @@ import com.meally.domain.common.util.onSuccess
 import com.meally.domain.meal.Meal
 import com.meally.domain.meal.MealRepository
 import com.meally.meally.common.navigation.Navigator
+import com.meally.meally.screens.destinations.CreateMealScreenDestination
 import com.meally.meally.screens.destinations.MealDetailsScreenDestination
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +42,7 @@ class UserMealsViewModel(
     }
 
     fun createMeal() {
-        // todo matko go to create meal
+        navigator.navigate(CreateMealScreenDestination())
     }
 
     private fun loadData() {

@@ -9,6 +9,7 @@ data class BrowseMealsDto(
     val name: String,
     val user: UserDto,
     val calories: Double,
+    val isLiked: Boolean,
 )
 
 fun BrowseMealsDto.toDomain() = BrowseMeal(
@@ -16,4 +17,5 @@ fun BrowseMealsDto.toDomain() = BrowseMeal(
     name = name,
     calories = calories,
     user = user.toDomain(),
+    isLiked = isLiked,
 )

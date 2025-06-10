@@ -54,4 +54,8 @@ class MealRepositoryImpl(
     override suspend fun deleteMeal(meal: Meal) = safeApiCall<Unit> {
         meallyAppApi.deleteMeal(meal.id)
     }
+
+    override suspend fun likeMeal(meal: Meal) = safeApiCall {
+        meallyAppApi.likeMeal(meal.id)
+    }
 }

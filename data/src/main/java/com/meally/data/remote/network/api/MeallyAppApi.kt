@@ -115,14 +115,14 @@ interface MeallyAppApi {
      *   /meals
      */
 
-    @GET("/public/meals")
+    @GET("/meals")
     suspend fun browseMeals(
         @Query("query") query: String,
         @Query("caloriesMin") caloriesMin: Double,
         @Query("caloriesMax") caloriesMax: Double
     ): List<BrowseMealsDto>
 
-    @GET("/meals")
+    @GET("/my-meals")
     suspend fun myMeals() : List<MealDto>
 
     @GET("/meals/{mealId}")
@@ -139,4 +139,10 @@ interface MeallyAppApi {
     suspend fun deleteMeal(
         @Path("mealId") mealId: String,
     )
+
+    @POST("/meals/{mealId}/like")
+    suspend fun likeMeal(
+        @Path("mealId") mealId: String,
+    )
+
 }

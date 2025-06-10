@@ -15,7 +15,7 @@ class FoodEntryOptionsViewModel(
         when (option) {
             FoodEntryOption.BARCODE -> navigator.navigate(BarcodeScanScreenDestination)
             FoodEntryOption.RECENT -> navigator.navigate(RecentFoodScreenDestination)
-            FoodEntryOption.SEARCH -> navigator.navigate(SearchFoodScreenDestination)
+            FoodEntryOption.SEARCH -> navigator.navigate(SearchFoodScreenDestination(goBackToMealCreation = false))
             FoodEntryOption.MANUAL -> navigator.navigate(FoodEntryScreenDestination(barcode = null))
         }
     }
