@@ -34,9 +34,16 @@ class DiaryRepositoryImpl(
         }
     }
 
-    override suspend fun enterFood(date: LocalDate, food: Food?, mealType: MealType, amount: Double) = safeApiCall<Unit> {
+    override suspend fun enterFood(
+        foodEntryId: String?,
+        date: LocalDate,
+        food: Food?,
+        mealType: MealType,
+        amount: Double
+    ) = safeApiCall<Unit> {
         meallyAppApi.foodEntry(
             FoodEntryInsertDto(
+                foodEntryId = foodEntryId,
                 foodId = food?.id,
                 mealType = mealType.name,
                 amount = amount,

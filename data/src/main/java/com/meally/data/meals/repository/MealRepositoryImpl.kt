@@ -14,11 +14,12 @@ import com.meally.domain.meal.MealVisibility
 class MealRepositoryImpl(
     private val meallyAppApi: MeallyAppApi
 ) : MealRepository {
-    override suspend fun browseMeals(searchQuery: String, caloriesMin: Double, caloriesMax: Double) = safeApiCall {
+    override suspend fun browseMeals(searchQuery: String, caloriesMin: Double, caloriesMax: Double, showOnlyLiked: Boolean) = safeApiCall {
         meallyAppApi.browseMeals(
             query = searchQuery,
             caloriesMin = caloriesMin,
             caloriesMax = caloriesMax,
+            showOnlyLiked = showOnlyLiked,
         ).map { it.toDomain() }
     }
 

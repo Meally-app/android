@@ -24,18 +24,6 @@ class SignupViewModel(
                 initialValue = null,
             )
 
-    fun test() {
-        viewModelScope.launch(Dispatchers.Default) {
-            userRepository.test()
-        }
-    }
-
-    fun logout() {
-        viewModelScope.launch(Dispatchers.Default) {
-            authRepository.logout()
-        }
-    }
-
     fun signupNewUser(
         email: String,
         password: String,

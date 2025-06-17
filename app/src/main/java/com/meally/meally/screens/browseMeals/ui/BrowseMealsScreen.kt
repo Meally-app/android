@@ -15,6 +15,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -58,6 +61,7 @@ fun BrowseMealsScreen(
         onSearchTermChanged = viewModel::searchTermChanged,
         onCaloriesMinChanged = viewModel::caloriesMinChanged,
         onCaloriesMaxChanged = viewModel::caloriesMaxChanged,
+        onShowOnlyLikedChanged = viewModel::showOnlyLikedChanged,
         onMealClicked = viewModel::mealClicked,
     )
 
@@ -70,6 +74,7 @@ private fun BrowseMealsScreenStateless(
     onSearchTermChanged: (String) -> Unit = {},
     onCaloriesMinChanged: (Double) -> Unit = {},
     onCaloriesMaxChanged: (Double) -> Unit = {},
+    onShowOnlyLikedChanged: (Boolean) -> Unit = {},
     onMealClicked: (BrowseMeal) -> Unit = {},
 ) {
 
@@ -87,10 +92,11 @@ private fun BrowseMealsScreenStateless(
                 onSearchTermChanged = onSearchTermChanged,
                 onCaloriesMinChanged = onCaloriesMinChanged,
                 onCaloriesMaxChanged = onCaloriesMaxChanged,
+                onShowOnlyLikedChanged = onShowOnlyLikedChanged,
             )
         }
 
-        items(state.meals, key = { it.name + it.calories}) {
+        items(state.meals, key = {it.id}) {
             MealView(
                 meal = it,
                 onMealClicked = { onMealClicked(it) },
@@ -107,6 +113,7 @@ private fun Filter(
     onSearchTermChanged: (String) -> Unit,
     onCaloriesMinChanged: (Double) -> Unit,
     onCaloriesMaxChanged: (Double) -> Unit,
+    onShowOnlyLikedChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column (
@@ -163,6 +170,24 @@ private fun Filter(
                 ),
             )
         }
+        VerticalSpacer(12.dp)
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
+        ){
+            Checkbox(
+                checked = searchState.showOnlyLiked,
+                onCheckedChange = onShowOnlyLikedChanged,
+                colors = CheckboxDefaults.colors().copy(
+                    checkedCheckmarkColor = MaterialTheme.colorScheme.onBackground
+                )
+            )
+            BasicText(
+                text = "Show only liked",
+                style = Typography.body2,
+            )
+        }
+
         VerticalSpacer(12.dp)
         HorizontalDivider(
             Modifier.height(2.dp)
@@ -243,7 +268,7 @@ private fun BrowseMealsPreview() {
                     ),
                     BrowseMeal(
                         id = "c",
-                        name = "Grandma's lasagna",
+                        name = "Grandma's lasagnaa",
                         calories = 520.1,
                         user = User(
                             id = "",
@@ -257,6 +282,7 @@ private fun BrowseMealsPreview() {
                     searchTerm = "aaa",
                     caloriesMin = 0.0,
                     caloriesMax = 5000.0,
+                    showOnlyLiked = false,
                 )
             )
         )

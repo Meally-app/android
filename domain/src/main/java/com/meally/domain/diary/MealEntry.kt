@@ -6,6 +6,7 @@ import com.meally.domain.mealType.MealType
 import java.time.LocalDate
 
 data class MealEntry(
+    val id: String,
     val meal: Meal,
     val mealType: MealType,
     val amount: Double,

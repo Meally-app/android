@@ -35,19 +35,21 @@ class FoodEntryViewModel(
     private val navigator: Navigator,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    private val barcode = savedStateHandle.navArgs<FoodEntryScreenNavArgs>().barcode
+    private val navArgs = savedStateHandle.navArgs<FoodEntryScreenNavArgs>().also { println("[TEST] $it") }
+
+    private val barcode = navArgs.barcode
 
     private val food = MutableStateFlow<Resource<Food>>(Resource.Success(Food.Empty))
 
     private val mealTypes = MutableStateFlow<List<MealType>>(emptyList())
 
-    private val amount = MutableStateFlow(100)
+    private val amount = MutableStateFlow(navArgs.amount ?: 100)
 
     private val isLoading = MutableStateFlow(true)
 
-    private val selectedMealType = MutableStateFlow(MealType.Empty)
+    private val selectedMealType = MutableStateFlow(navArgs.mealType?.let { MealType(navArgs.mealType, 0) } ?: MealType.Empty)
 
-    private val selectedDate = MutableStateFlow(LocalDate.now())
+    private val selectedDate = MutableStateFlow(navArgs.date ?: LocalDate.now())
 
     val state =
         combine(food, amount, isLoading, mealTypes, selectedDate) { food, amount, isLoading, mealTypes, selectedDate ->
@@ -75,7 +77,8 @@ class FoodEntryViewModel(
                 date = selectedDate.value,
                 food = barcode?.let { foodVal },
                 mealType = selectedMealType.value,
-                amount = amount.value.toDouble()
+                amount = amount.value.toDouble(),
+                foodEntryId = navArgs.foodEntryId,
             ).onSuccess {
                 navigator.goToHome()
             }.onFailure {

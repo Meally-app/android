@@ -15,6 +15,7 @@ sealed interface FoodInfoViewState {
 data class FoodItemViewState(
     val name: String,
     val imageUrl: String?,
+    val amount: Int,
     val calories: String,
     val carbs: String,
     val protein: String,
@@ -31,4 +32,5 @@ fun Food.toViewState() =
         protein = protein.toString(),
         fat = fat.toString(),
         unitOfMeasurement = unitOfMeasurement.abbreviation,
+        amount = 0,
     )

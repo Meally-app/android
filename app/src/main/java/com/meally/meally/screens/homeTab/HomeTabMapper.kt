@@ -7,6 +7,7 @@ import com.meally.domain.diary.MealEntry
 import com.meally.domain.diary.calories
 import com.meally.domain.weight.Weight
 import com.meally.meally.screens.homeTab.ui.model.CaloriesPieChartValues
+import com.meally.meally.screens.homeTab.ui.model.DiaryEntryItem
 import com.meally.meally.screens.homeTab.ui.model.FoodListItem
 import com.meally.meally.screens.homeTab.ui.model.HomeTabViewState
 import java.time.LocalDate
@@ -32,6 +33,7 @@ private fun mapItems(diaryEntry: DiaryEntry?): List<FoodListItem> {
                     name = it.food?.name ?: "Manual entry",
                     mealType = it.mealType,
                     calories = it.calories.toInt().toString(),
+                    item = DiaryEntryItem.Food(it),
                 )
             )
         }
@@ -40,7 +42,8 @@ private fun mapItems(diaryEntry: DiaryEntry?): List<FoodListItem> {
                 FoodListItem(
                     name = it.meal.name,
                     mealType = it.mealType,
-                    calories = it.calories.toInt().toString()
+                    calories = it.calories.toInt().toString(),
+                    item = DiaryEntryItem.Meal(it),
                 )
             )
         }
@@ -58,16 +61,19 @@ private fun mapDonutChart(diaryEntry: DiaryEntry?): CaloriesPieChartValues {
             remaining = 2000f,
             total = 2000f,
             exercise = 0f,
+            remainingText = "2000\nLeft"
         )
     }
     val consumed = mapConsumedCalories(diaryEntry.food, diaryEntry.meals)
     val exercise = mapExerciseCalories(diaryEntry.exercise)
     val total = diaryEntry.goalCalories + exercise
     val remaining = total - consumed
+    val remainingRounded = remaining.toInt()
     return CaloriesPieChartValues(
         consumed = consumed.toFloat(),
         exercise = exercise.toFloat(),
         total = total.toFloat(),
-        remaining = remaining.toFloat(),
+        remaining = remaining.toFloat().takeIf { it > 0 } ?: 0f,
+        remainingText = if (remaining > 0) "$remainingRounded\nLeft" else "${-remainingRounded}\nOver"
     )
 }

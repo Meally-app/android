@@ -10,12 +10,10 @@ import com.meally.meally.screens.browseMeals.mapper.browseMealsMapper
 import com.meally.meally.screens.browseMeals.state.BrowseMealsSearchState
 import com.meally.meally.screens.destinations.MealDetailsScreenDestination
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,19 +30,21 @@ class BrowseMealsViewModel(
     private val searchTerm = MutableStateFlow("")
     private val caloriesMin = MutableStateFlow(0.0)
     private val caloriesMax = MutableStateFlow(5000.0)
+    private val showOnlyLiked = MutableStateFlow(false)
 
-    private val searchState = combine(searchTerm, caloriesMin, caloriesMax) { searchTerm, caloriesMin, caloriesMax ->
+    private val searchState = combine(searchTerm, caloriesMin, caloriesMax, showOnlyLiked) { searchTerm, caloriesMin, caloriesMax, showOnlyLiked ->
         BrowseMealsSearchState(
             searchTerm = searchTerm,
             caloriesMin = caloriesMin,
             caloriesMax = caloriesMax,
+            showOnlyLiked = showOnlyLiked,
         )
     }.onEach {
         loadMeals(it)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = BrowseMealsSearchState(searchTerm.value, caloriesMin.value, caloriesMax.value)
+        initialValue = BrowseMealsSearchState(searchTerm.value, caloriesMin.value, caloriesMax.value, showOnlyLiked.value)
     )
 
     val viewState = combine(isLoading, meals, searchState, ::browseMealsMapper)
@@ -66,6 +66,10 @@ class BrowseMealsViewModel(
         caloriesMax.update { newMax }
     }
 
+    fun showOnlyLikedChanged(onlyLiked: Boolean) {
+        showOnlyLiked.update { onlyLiked }
+    }
+
     fun mealClicked(meal: BrowseMeal) {
         navigator.navigate(MealDetailsScreenDestination(meal.id))
     }
@@ -78,6 +82,7 @@ class BrowseMealsViewModel(
                     searchQuery = searchTerm,
                     caloriesMin = caloriesMin,
                     caloriesMax = caloriesMax,
+                    showOnlyLiked = showOnlyLiked,
                 )
             }.onSuccess { newMeals ->
                 meals.update { newMeals }

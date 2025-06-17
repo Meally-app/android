@@ -51,6 +51,7 @@ private fun mapFoodInfo(
                 fat = "0",
                 protein = "0",
                 unitOfMeasurement = "",
+                amount = amount,
             )
         )
     }
@@ -68,6 +69,7 @@ private fun mapFoodInfo(
                         protein = format(protein, amount),
                         fat = format(fat, amount),
                         unitOfMeasurement = unitOfMeasurement.abbreviation,
+                        amount = amount,
                     )
                 },
             )

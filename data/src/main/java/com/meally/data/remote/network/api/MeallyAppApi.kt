@@ -119,7 +119,8 @@ interface MeallyAppApi {
     suspend fun browseMeals(
         @Query("query") query: String,
         @Query("caloriesMin") caloriesMin: Double,
-        @Query("caloriesMax") caloriesMax: Double
+        @Query("caloriesMax") caloriesMax: Double,
+        @Query("showOnlyLiked") showOnlyLiked: Boolean,
     ): List<BrowseMealsDto>
 
     @GET("/my-meals")

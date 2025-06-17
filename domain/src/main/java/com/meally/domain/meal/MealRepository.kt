@@ -8,6 +8,7 @@ interface MealRepository {
         searchQuery: String,
         caloriesMin: Double,
         caloriesMax: Double,
+        showOnlyLiked: Boolean,
     ): Resource<List<BrowseMeal>>
 
     suspend fun myMeals(): Resource<List<Meal>>

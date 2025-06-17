@@ -55,11 +55,16 @@ import com.meally.meally.common.food.viewState.FoodInfoViewState
 import com.meally.meally.common.food.viewState.FoodItemViewState
 import com.meally.meally.screens.foodEntry.ui.model.FoodEntryViewState
 import com.ramcosta.composedestinations.annotation.Destination
+import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import java.time.LocalDate
 
 data class FoodEntryScreenNavArgs(
     val barcode: String?,
+    val amount: Int? = null,
+    val mealType: String? = null,
+    val date: LocalDate? = null,
+    val foodEntryId: String? = null,
 )
 
 @Destination(navArgsDelegate = FoodEntryScreenNavArgs::class)
@@ -204,9 +209,11 @@ private fun Content(
 
             VerticalSpacer(32.dp)
 
+            val initialCalories = remember(item.name){ item.amount }
+
             InputRow(
                 label = if (isManualEntry) "Calories" else "Amount (${item.unitOfMeasurement}):",
-                initialValue = "100",
+                initialValue = initialCalories.toString(),
                 onInputChanged = onAmountChanged,
                 keyboardOptions =
                 KeyboardOptions(
@@ -391,6 +398,7 @@ private fun LoadedPreview() {
                         protein = "8.4",
                         fat = "22.0",
                         unitOfMeasurement = "g",
+                        amount = 100,
                     ),
                 ),
                 mealTypeOptions = mapOf("Breakfast" to MealType("breakfast", 1)),

@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter
 
 @Serializable
 data class FoodEntryDto(
+    val id: String,
     val food: FoodDto?,
     val mealType: MealTypeDto,
     val amount: Double,
@@ -18,6 +19,7 @@ data class FoodEntryDto(
 )
 
 fun FoodEntryDto.toDomain() = FoodEntry(
+    id = id,
     food = food?.toDomain(),
     mealType = mealType.toDomain(),
     amount = amount,

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,26 +36,17 @@ import org.koin.androidx.compose.koinViewModel
 @Destination
 @Composable
 fun SignupScreen(viewModel: SignupViewModel = koinViewModel()) {
-    val user = viewModel.userFlow.collectAsStateWithLifecycle().value
-
     SignupScreenStateless(
-        user = user,
         onSignupClicked = { email, password -> viewModel.signupNewUser(email, password) },
         onLoginClicked = { email, password -> viewModel.loginUser(email, password) },
-        onLogoutClicked = viewModel::logout,
-        onBackendCall = viewModel::test,
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun SignupScreenStateless(
-    user: User?,
     localFocusManager: FocusManager = LocalFocusManager.current,
     onSignupClicked: (String, String) -> Unit = { _, _ -> },
     onLoginClicked: (String, String) -> Unit = { _, _ -> },
-    onLogoutClicked: () -> Unit = {},
-    onBackendCall: () -> Unit = {},
 ) {
     var email by remember {
         mutableStateOf("")
@@ -75,39 +67,37 @@ private fun SignupScreenStateless(
         BasicTextField(
             text = email,
             onTextChanged = { email = it },
+            label = {
+                BasicText(
+                    text = "Email",
+                    style = Typography.body2,
+                )
+            }
         )
         VerticalSpacer(24.dp)
         BasicTextField(
             text = password,
             onTextChanged = { password = it },
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            label = {
+                BasicText(
+                    text = "Password",
+                    style = Typography.body2,
+                )
+            }
         )
         VerticalSpacer(24.dp)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            BasicButton(
-                text = "Signup",
-                onClick = { onSignupClicked(email, password) },
-            )
-            BasicButton(
-                text = "Login",
-                onClick = { onLoginClicked(email, password) },
-            )
-            BasicButton(
-                text = "Logout",
-                onClick = onLogoutClicked,
-            )
-//            BasicButton(
-//                text = "Backend call",
-//                onClick = onBackendCall,
-//            )
-        }
+
+        BasicButton(
+            text = "Signup",
+            onClick = { onSignupClicked(email, password) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+        )
         VerticalSpacer(12.dp)
-        BasicText(
-            text = user.toString(),
-            style = Typography.body1,
-            modifier = Modifier.padding(horizontal = 24.dp),
+        BasicButton(
+            text = "Login",
+            onClick = { onLoginClicked(email, password) },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
         )
     }
 }
@@ -116,8 +106,6 @@ private fun SignupScreenStateless(
 @Composable
 private fun SignupScreenPreview() {
     MeallyTheme {
-        SignupScreenStateless(
-            user = User("1", "aaa", "a"),
-        )
+        SignupScreenStateless()
     }
 }

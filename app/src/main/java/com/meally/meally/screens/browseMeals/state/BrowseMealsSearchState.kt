@@ -4,4 +4,5 @@ data class BrowseMealsSearchState(
     val searchTerm: String,
     val caloriesMin: Double,
     val caloriesMax: Double,
+    val showOnlyLiked: Boolean,
 )

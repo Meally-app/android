@@ -2,16 +2,19 @@ package com.meally.meally.screens.homeTab.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.meally.domain.common.util.onFailure
 import com.meally.domain.common.util.onSuccess
 import com.meally.domain.diary.DiaryEntry
 import com.meally.domain.diary.FoodEntry
 import com.meally.domain.diary.DiaryRepository
+import com.meally.domain.diary.MealEntry
 import com.meally.domain.weight.Weight
 import com.meally.domain.weight.WeightRepository
 import com.meally.meally.common.navigation.Navigator
+import com.meally.meally.screens.destinations.FoodEntryScreenDestination
+import com.meally.meally.screens.destinations.MealEntryScreenDestination
 import com.meally.meally.screens.destinations.WeightEntryScreenDestination
 import com.meally.meally.screens.homeTab.homeTabMapper
+import com.meally.meally.screens.homeTab.ui.model.DiaryEntryItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -44,6 +47,25 @@ class HomeTabViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = homeTabMapper(diaryEntry.value, selectedDate.value, isLoading.value, weight.value)
     )
+
+    fun entryClicked(item: DiaryEntryItem) {
+        when (item) {
+            is DiaryEntryItem.Food -> navigator.navigate(
+                FoodEntryScreenDestination(
+                    barcode = item.entry.food?.barcode,
+                    amount = item.entry.amount.toInt(),
+                    mealType = item.entry.mealType.name,
+                    date = item.entry.date,
+                    foodEntryId = item.entry.id,
+                )
+            )
+            is DiaryEntryItem.Meal -> navigator.navigate(
+                MealEntryScreenDestination(
+                    mealId = item.entry.meal.id,
+                )
+            )
+        }
+    }
 
     fun refresh() {
         viewModelScope.launch(Dispatchers.Default) {

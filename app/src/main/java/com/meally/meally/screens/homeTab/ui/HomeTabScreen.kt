@@ -61,7 +61,9 @@ import com.meally.meally.screens.destinations.FoodEntryOptionsScreenDestination
 import com.meally.meally.screens.destinations.SignupScreenDestination
 import com.meally.meally.screens.destinations.UserGraphScreenDestination
 import com.meally.meally.screens.destinations.UserMealsScreenDestination
+import com.meally.meally.screens.destinations.UserProfileScreenDestination
 import com.meally.meally.screens.homeTab.ui.model.CaloriesPieChartValues
+import com.meally.meally.screens.homeTab.ui.model.DiaryEntryItem
 import com.meally.meally.screens.homeTab.ui.model.FoodListItem
 import com.meally.meally.screens.homeTab.ui.model.HomeTabViewState
 import com.meally.meally.screens.homeTab.viewModel.HomeTabViewModel
@@ -85,14 +87,15 @@ fun HomeTabScreen(
         onDateSelected = viewModel::selectDate,
         onAddWeightClicked = viewModel::addWeight,
         onProfileClicked = {
-            navigator.navigate(SignupScreenDestination)
+            navigator.navigate(UserProfileScreenDestination)
         },
         onMealsClicked = {
             navigator.navigate(UserMealsScreenDestination)
         },
         onExerciseClicked = {
             navigator.navigate(ExerciseScreenDestination(state.selectedDate))
-        }
+        },
+        onEntryClicked = viewModel::entryClicked
     )
 
     LaunchedEffect(Unit) {
@@ -109,6 +112,7 @@ fun HomeTabScreenStateless(
     onProfileClicked: () -> Unit = {},
     onMealsClicked: () -> Unit = {},
     onExerciseClicked: () -> Unit = {},
+    onEntryClicked: (DiaryEntryItem) -> Unit = {},
 ) {
 
     var isDatePickerShown by remember { mutableStateOf(false) }
@@ -134,6 +138,7 @@ fun HomeTabScreenStateless(
                 onOpenDatePicker = { isDatePickerShown = true },
                 onAddWeightClicked = onAddWeightClicked,
                 onExerciseClicked = onExerciseClicked,
+                onEntryClicked = onEntryClicked,
             )
         }
 
@@ -174,6 +179,7 @@ fun Content(
     onOpenDatePicker: () -> Unit,
     onAddWeightClicked: () -> Unit,
     onExerciseClicked: () -> Unit,
+    onEntryClicked: (DiaryEntryItem) -> Unit,
 ) {
 
     LazyColumn (
@@ -204,9 +210,8 @@ fun Content(
                         modifier = Modifier.size(120.dp)
                     )
                 }
-
                 BasicText(
-                    text = "${state.caloriesPieChartValues.remaining.toInt()}\nLeft",
+                    text = state.caloriesPieChartValues.remainingText,
                     style = Typography.h3.copy(
                         color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center,
@@ -292,7 +297,8 @@ fun Content(
         }
 
         FoodList(
-            state.items
+            state.items,
+            onEntryClicked,
         )
 
         item {
@@ -304,6 +310,7 @@ fun Content(
 
 fun LazyListScope.FoodList(
     list: List<FoodListItem>,
+    onEntryClicked: (DiaryEntryItem) -> Unit,
 ) {
     items(list, key = { it.name + it.calories }) {
         Row (
@@ -313,6 +320,8 @@ fun LazyListScope.FoodList(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
                 .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
+                .clickable { onEntryClicked(it.item) }
                 .padding(16.dp)
                 .animateItem()
         ){
@@ -420,7 +429,8 @@ private fun HomeTabPreview() {
                                     name = "Breakfast",
                                     orderInDay = 1,
                                 ),
-                                calories = (140 + it).toString()
+                                calories = (140 + it).toString(),
+                                item = DiaryEntryItem.Food(FoodEntry.Empty)
                             )
                         )
                     }
@@ -435,6 +445,7 @@ private fun HomeTabPreview() {
                     exercise = 212f,
                     remaining = 1559f,
                     total = 2212f,
+                    remainingText = "1559\nLeft"
                 )
             )
         )
